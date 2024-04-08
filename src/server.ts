@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 import app from "./app";
 
 import { OrderDocument, OrderSchema } from "./model/Order";
-import { VintageCarDocument, VintageCarSchema } from "./model/Car";
-import { BrandDocument, BrandSchema } from "./model/Brand";
+import { RecordDocument, RecordSchema } from "./model/Record";
 import { ConditionDocument, ConditionSchema } from "./model/Condition";
 
 const mongodbUrl = process.env.MONGODB_URL as string;
@@ -11,11 +10,11 @@ const port = process.env.PORT as string;
 
 mongoose
   .connect(mongodbUrl, {
-    dbName: "vintagecarsmarket",
+    dbName: "goldenrack",
   })
   .then(() => {
     app.listen(port, () => {
-      console.log("Database vintagecarsmarket is connected");
+      console.log("Database goldenrack is connected");
       console.log(`Server is running on http://localhost:${port}`);
     });
   })
@@ -25,6 +24,5 @@ mongoose
   });
 
 mongoose.model<OrderDocument>("Order", OrderSchema);
-mongoose.model<VintageCarDocument>("VintageCar", VintageCarSchema);
-mongoose.model<BrandDocument>("Brand", BrandSchema);
+mongoose.model<RecordDocument>("Record", RecordSchema);
 mongoose.model<ConditionDocument>("Condition", ConditionSchema);
