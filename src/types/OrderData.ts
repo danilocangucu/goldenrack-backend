@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { VintageCarData } from "./VintageCarData";
+import { RecordData } from "./RecordData";
+import { StockData } from "./StockData";
 
 export interface OrderData {
   id: string;
-  carId: string | VintageCarData;
-  quantity: number;
-  orderSum: number;
+  stock: string | StockData;
+  record: string | RecordData;
 }
 
 export interface OrderListData {

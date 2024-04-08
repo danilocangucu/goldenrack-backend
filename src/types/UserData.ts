@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { OrderListData } from "./OrderData";
-import { Role } from "./Role";
+import { RoleData } from "./RoleData";
 
 export interface UserData {
   id: string;
@@ -10,7 +10,7 @@ export interface UserData {
   hashedPassword: string;
   firstName: string;
   lastName: string;
-  role: Role;
+  role: RoleData;
   banned: boolean;
   orderHistory: OrderListData[] | mongoose.Types.ObjectId[];
 }
