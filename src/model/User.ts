@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import { UserData } from "../types/UserData";
-import { Role } from "../types/Role";
+import { RoleData } from "../types/RoleData";
 
 export type UserDocument = Document & UserData;
 
@@ -28,8 +28,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: Object.values(Role),
-    default: Role.Customer,
+    enum: Object.values(RoleData),
+    default: RoleData.Customer,
     required: true,
   },
   banned: {

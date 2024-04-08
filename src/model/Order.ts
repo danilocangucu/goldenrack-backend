@@ -4,9 +4,9 @@ import { OrderData } from "../types/OrderData";
 export type OrderDocument = Document & OrderData;
 
 export const OrderSchema = new mongoose.Schema({
-  carId: {
+  record: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "VintageCar",
+    ref: "Record",
     required: true,
   },
   quantity: {

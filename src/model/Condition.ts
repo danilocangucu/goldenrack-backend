@@ -1,13 +1,16 @@
 import mongoose, { Document } from 'mongoose';
 
-import { ConditionData, CarCondition } from '../types/ConditionData';
+import {
+  RecordConditionData,
+  RecordCondition,
+} from "../types/RecordConditionData";
 
-export type ConditionDocument = Document & ConditionData;
+export type ConditionDocument = Document & RecordConditionData;
 
 export const ConditionSchema = new mongoose.Schema({
   name: {
     type: String,
-    enum: Object.values(CarCondition),
+    enum: Object.values(RecordCondition),
     required: true,
   },
 });
