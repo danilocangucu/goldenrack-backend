@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import { RecordData } from "../types/RecordData";
 
-export type VintageCarDocument = RecordData & Document;
+export type RecordDocument = RecordData & Document;
 
 export const RecordSchema = new mongoose.Schema({
   genre: {
@@ -34,4 +34,4 @@ export const RecordSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model<VintageCarDocument>("Record", RecordSchema);
+export default mongoose.model<RecordDocument>("Record", RecordSchema);
