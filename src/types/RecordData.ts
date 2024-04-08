@@ -10,3 +10,11 @@ export interface RecordData {
   year: number;
   stock: StockData[];
 }
+
+export interface GetRecords {
+  limit: number;
+  offset: number;
+  searchQuery?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}

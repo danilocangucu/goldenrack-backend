@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { checkAuthorization } from "../utils/authUtils";
-import { Role } from "../types/Role";
+import { RoleData } from "../types/RoleData";
 
 export async function hasPermission(
   req: Request,
@@ -14,7 +14,7 @@ export async function hasPermission(
 
     if (
       (decodedToken.userId === userId && !decodedToken.isUserBanned) ||
-      decodedToken.userRole === Role.Admin
+      decodedToken.userRole === RoleData.Admin
     ) {
       next();
     } else {

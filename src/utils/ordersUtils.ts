@@ -1,20 +1,36 @@
-import { ObjectId } from "mongoose";
 import OrderList, { OrderListDocument } from "../model/OrderList";
-import VintageCar from "../model/Car";
-import { OrderData, OrderListData } from "../types/OrderData";
-import Order, { OrderDocument } from "../model/Order";
+import Record, { RecordDocument } from "../model/Record";
+import { OrderData } from "../types/OrderData";
 
-export async function validateOrderSum(orderData: OrderData): Promise<boolean> {
+export async function validateOrder(orderData: OrderData): Promise<boolean> {
   try {
-    const vintageCar = await VintageCar.findById(orderData.carId);
+    let recordId: string;
 
-    if (!vintageCar) {
-      throw new Error("VintageCar not found");
+    if (typeof orderData.record === "string") {
+      recordId = orderData.record;
+    } else {
+      recordId = orderData.record.id;
     }
 
-    const expectedOrderSum = orderData.quantity * vintageCar.price;
+    const record: RecordDocument | null = await Record.findById(recordId);
 
-    return expectedOrderSum === orderData.orderSum;
+    if (!record) {
+      throw new Error("Record not found");
+    }
+
+    const stockExists = record.stock.some((stockItem) => {
+      if (typeof orderData.stock === "string") {
+        return stockItem.id === orderData.stock;
+      } else {
+        return stockItem.id === orderData.stock.id;
+      }
+    });
+
+    if (!stockExists) {
+      throw new Error("The requested record does not exist in stock");
+    }
+
+    return true;
   } catch (error) {
     console.error("Error validating order sum:", error);
     return false;
@@ -31,7 +47,7 @@ export async function findOrderListById(
   return orderList;
 }
 
-export function sanitizeOrderList(orderList: OrderListDocument): OrderListData {
+export function sanitizeOrderList(orderList: OrderListDocument): any {
   const orders = orderList.orders || [];
 
   const sanitizedOrders = orders.map((order: any) => sanitizeOrder(order));
@@ -39,11 +55,11 @@ export function sanitizeOrderList(orderList: OrderListDocument): OrderListData {
   return { id: orderList._id, orders: sanitizedOrders };
 }
 
-export function sanitizeOrder(order: OrderDocument): OrderData {
+export function sanitizeOrder(order: any): any {
   const { _id, __v, ...sanitizedOrder } = order.toObject();
   return {
     id: _id,
-    carId: sanitizedOrder.carId,
+    stock: sanitizedOrder.carId,
     quantity: sanitizedOrder.quantity,
     orderSum: sanitizedOrder.orderSum,
   };

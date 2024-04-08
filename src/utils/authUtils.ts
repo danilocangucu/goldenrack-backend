@@ -8,7 +8,7 @@ import { JwtProperty } from "../types/JwtProperty";
 import { DecodedJwtPayload } from "../types/DecodedJwtPayload";
 import User, { UserDocument } from "../model/User";
 import { UserData } from "../types/UserData";
-import { Role } from "../types/Role";
+import { RoleData } from "../types/RoleData";
 
 const saltRounds = 10;
 const secret = crypto.randomBytes(32).toString("hex");
@@ -128,7 +128,7 @@ export function checkAuthorization(req: Request) {
     throw new Error("Invalid or expired JWT token");
   }
 
-  if (decodedToken.userRole !== Role.Admin && decodedToken.isUserBanned) {
+  if (decodedToken.userRole !== RoleData.Admin && decodedToken.isUserBanned) {
     throw new Error("You are banned, please contact an admin.");
   }
 

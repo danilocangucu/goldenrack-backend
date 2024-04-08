@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import orderListService from "../services/orderListService";
-import { validateOrderSum } from "../utils/ordersUtils";
+import { validateOrder } from "../utils/ordersUtils";
 import OrderList from "../model/OrderList";
 
 export async function getOrderListHandler(req: Request, res: Response) {
@@ -30,7 +30,7 @@ export async function addOrderToOrderListHandler(req: Request, res: Response) {
 
     const orderData = req.body;
 
-    const isValidOrderSum = await validateOrderSum(orderData);
+    const isValidOrderSum = await validateOrder(orderData);
     if (!isValidOrderSum) {
       return res
         .status(400)

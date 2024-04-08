@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { checkAuthorization } from "../utils/authUtils";
-import { Role } from "../types/Role";
+import { RoleData } from "../types/RoleData";
 
 export function isAdmin(req: Request, res: Response, next: NextFunction) {
   try {
     const decodedToken = checkAuthorization(req);
 
-    if (decodedToken.userRole === Role.Admin) {
+    if (decodedToken.userRole === RoleData.Admin) {
       next();
     } else {
       throw new Error("User is not authorized");
