@@ -1,6 +1,8 @@
 import { Request } from "express";
 
-import Record from "../model/Record";
+import Record from "../models/Record";
+import { populateFieldObj, populateField } from "./dbUtils";
+import Stock from "../models/Stock";
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -26,24 +28,64 @@ export function parseRecordsQueryParams(req: Request) {
   };
 }
 
-export async function aggregateRecords(
-  minPrice: number,
-  maxPrice: number
-): Promise<any> {
-  return Record.aggregate([
-    { $unwind: "$stock" },
-    { $match: { "stock.price": { $gte: minPrice, $lte: maxPrice } } },
-    { $sort: { "stock.price": 1, year: -1, title: 1 } },
-    {
-      $group: {
-        _id: "$_id",
-        genre: { $first: "$genre" },
-        title: { $first: "$title" },
-        artist: { $first: "$artist" },
-        description: { $first: "$description" },
-        year: { $first: "$year" },
-        stock: { $push: "$stock" },
-      },
-    },
-  ]);
+export async function fetchAndPopulateRecords(): Promise<any[]> {
+  const records = await Record.find();
+
+  const stockData = await populateField("stock", "stocks", records, Record);
+
+  const stockWithConditionData = await populateFieldObj(
+    "condition",
+    "conditions",
+    "stock",
+    stockData,
+    Stock
+  );
+  const stockWithStoreData = await populateFieldObj(
+    "store",
+    "stores",
+    "stock",
+    stockData,
+    Stock
+  );
+
+  const genreData = await populateField("genre", "genres", records, Record);
+
+  const populatedRecords = transformRecords(
+    records,
+    stockWithConditionData,
+    stockWithStoreData,
+    genreData
+  );
+
+  return populatedRecords;
+}
+
+function transformRecords(
+  records: any[],
+  stockWithConditionData: any[],
+  stockWithStoreData: any[],
+  genreData: any[]
+): any[] {
+  return records.map((record, index) => {
+    const stockConditions = mapStockData(
+      stockWithConditionData,
+      index,
+      "condition"
+    );
+    const stockPrice = mapStockData(stockWithConditionData, index, "price");
+    const stockStore = mapStockData(stockWithStoreData, index, "store");
+    return {
+      ...record.toObject(),
+      genre: genreData[index],
+      stock: stockConditions.map((condition: any, i: number) => ({
+        condition,
+        price: stockPrice[i],
+        store: stockStore[i],
+      })),
+    };
+  });
+}
+
+function mapStockData(stockData: any[], index: number, field: string): any[] {
+  return stockData[index]?.stock.map((item: any) => item[field]) ?? [];
 }
