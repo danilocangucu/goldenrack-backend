@@ -17,13 +17,11 @@ export const RecordSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  stock: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Stock",
-      required: true,
-    },
-  ],
+  stock: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Stock",
+    required: true,
+  },
   description: {
     type: String,
     required: true,
