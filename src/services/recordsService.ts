@@ -1,12 +1,11 @@
-import Record, { RecordDocument } from "../model/Record";
-import { GetRecords } from "../types/RecordData";
-import { aggregateRecords } from "../utils/recordsUtils";
+import { GetRecords, RecordData } from "../types/RecordData";
+import { fetchAndPopulateRecords } from "../utils/recordsUtils";
 
 const getAllRecords = async ({
   searchQuery,
   minPrice,
   maxPrice,
-}: GetRecords): Promise<RecordDocument[]> => {
+}: GetRecords): Promise<RecordData[]> => {
   const query: any = {};
 
   if (searchQuery) {
@@ -15,7 +14,7 @@ const getAllRecords = async ({
 
   query["stock.price"] = { $gte: minPrice, $lte: maxPrice };
 
-  return await aggregateRecords(minPrice!, maxPrice!);
+  return await fetchAndPopulateRecords();
 };
 
 export default {
