@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
+
 export interface StoreData {
-  id: string;
+  _id: string | Types.ObjectId;
   name: string;
   location: string;
   website: string;
@@ -8,12 +10,12 @@ export interface StoreData {
   contactEmail: string;
   phoneNumber: string;
   openingHours: string;
-  shippingInformation: ShippingInformationData;
+  shippingInfo: ShippingInfoData;
   returnPolicy: string;
   featuredItems: string[];
 }
 
-export interface ShippingInformationData {
+export interface ShippingInfoData {
   domestic: DomesticShipping;
   international: InternationalShipping;
 }
