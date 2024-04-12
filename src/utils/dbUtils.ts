@@ -1,48 +1,32 @@
 import mongoose from "mongoose";
 
+interface PopulateFieldOptions {
+  fieldName: string;
+  unwind?: string;
+  extraMatch?: string;
+}
+
 export async function populateField(
-  fieldName: string,
-  collectionName: string,
+  options: PopulateFieldOptions,
   documents: any[],
   model: mongoose.Model<any>
 ) {
-  const populatedFields = await model.aggregate([
-    {
-      $match: {
-        [fieldName]: { $in: documents.map((doc) => doc[fieldName]) },
-      },
-    },
-    {
-      $lookup: {
-        from: collectionName,
-        localField: fieldName,
-        foreignField: "_id",
-        as: `${fieldName}Data`,
-      },
-    },
-    {
-      $addFields: {
-        [fieldName]: { $arrayElemAt: [`$${fieldName}Data`, 0] },
-      },
-    },
-    {
-      $project: {
-        [`${fieldName}Data`]: 0,
-      },
-    },
-  ]);
+  const { fieldName, unwind, extraMatch } = options;
 
-  const populatedDocuments = populatedFields.map((field) => field[fieldName]);
-  return populatedDocuments;
+  if (unwind) {
+    return populateWithUnwind(fieldName, unwind, documents, model);
+  } else {
+    return populateWithoutUnwind(fieldName, documents, model, extraMatch);
+  }
 }
 
-export async function populateFieldObj(
+async function populateWithUnwind(
   fieldName: string,
-  collectionName: string,
   unwind: string,
   documents: any[],
   model: mongoose.Model<any>
 ) {
+  const collectionName = fieldName + "s";
   const populatedFields = await Promise.all(
     documents.map(async (doc) => {
       const populatedDoc = await model.aggregate([
@@ -72,14 +56,66 @@ export async function populateFieldObj(
         {
           $group: {
             _id: "$_id",
-            stock: { $push: `$${unwind}` },
+            [unwind]: { $push: `$${unwind}` },
           },
         },
       ]);
 
-      return populatedDoc[0];
+      const populatedField = populatedDoc[0][unwind].map(
+        (field: any) => field[`${fieldName}`]
+      );
+
+      return populatedField;
     })
   );
-
   return populatedFields;
+}
+
+async function populateWithoutUnwind(
+  fieldName: string,
+  documents: any[],
+  model: mongoose.Model<any>,
+  extraMatch?: string
+) {
+  const collectionName = fieldName + "s";
+
+  const matchCriteria = {
+    [fieldName]: { $in: documents.map((doc) => doc[fieldName]) },
+  };
+
+  if (extraMatch) {
+    matchCriteria[extraMatch] = {
+      $in: documents.map((doc) => doc[extraMatch]),
+    };
+  }
+
+  const populatedFields = await model.aggregate([
+    {
+      $match: matchCriteria,
+    },
+    {
+      $lookup: {
+        from: collectionName,
+        localField: fieldName,
+        foreignField: "_id",
+        as: `${fieldName}Data`,
+      },
+    },
+    {
+      $addFields: {
+        [fieldName]: { $arrayElemAt: [`$${fieldName}Data`, 0] },
+      },
+    },
+    {
+      $project: {
+        [`${fieldName}Data`]: 0,
+      },
+    },
+  ]);
+
+  const populatedDocuments = populatedFields.map(
+    (field: any) => field[fieldName]
+  );
+
+  return populatedDocuments;
 }

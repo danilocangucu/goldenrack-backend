@@ -1,8 +1,9 @@
 import { Request } from "express";
 
 import Record from "../models/Record";
-import { populateFieldObj, populateField } from "./dbUtils";
+import { populateField } from "./dbUtils";
 import Stock from "../models/Stock";
+import Store from "../models/Store";
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -28,36 +29,42 @@ export function parseRecordsQueryParams(req: Request) {
   };
 }
 
-export async function fetchAndPopulateRecords(): Promise<any[]> {
+export async function fetchAndPopulateRecords(): Promise<any> {
   const records = await Record.find();
 
-  const stockData = await populateField("stock", "stocks", records, Record);
-
-  const stockWithConditionData = await populateFieldObj(
-    "condition",
-    "conditions",
-    "stock",
-    stockData,
-    Stock
-  );
-  const stockWithStoreData = await populateFieldObj(
-    "store",
-    "stores",
-    "stock",
-    stockData,
-    Stock
-  );
-
-  const genreData = await populateField("genre", "genres", records, Record);
-
-  const populatedRecords = transformRecords(
+  const stockData = await populateField(
+    { fieldName: "stock" },
     records,
-    stockWithConditionData,
-    stockWithStoreData,
-    genreData
+    Record
   );
 
-  return populatedRecords;
+  const conditionData = await populateField(
+    { fieldName: "condition", unwind: "stock" },
+    stockData,
+    Stock
+  );
+
+  const storeData = await populateField(
+    { fieldName: "store", unwind: "stock" },
+    stockData,
+    Stock
+  );
+
+  const shippingInfoInStore = await Promise.all(
+    storeData.map(async (storesInRecord) => {
+      const shippingInfoPromise = populateField(
+        {
+          fieldName: "shippingInfo",
+          extraMatch: "_id",
+        },
+        storesInRecord,
+        Store
+      );
+      return await shippingInfoPromise;
+    })
+  );
+
+  return { stockData, conditionData, storeData, shippingInfoInStore };
 }
 
 function transformRecords(
