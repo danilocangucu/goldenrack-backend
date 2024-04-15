@@ -1,7 +1,7 @@
 import { Request } from "express";
 
 import Record from "../models/Record";
-import { populateField } from "./dbUtils";
+import { mapFields, populateField } from "./dbUtils";
 import Stock from "../models/Stock";
 import Store from "../models/Store";
 
@@ -29,11 +29,18 @@ export function parseRecordsQueryParams(req: Request) {
   };
 }
 
+// TODO refactoring for calling populateField & mapField
 export async function fetchAndPopulateRecords(): Promise<any> {
   const records = await Record.find();
 
   const stockData = await populateField(
     { fieldName: "stock" },
+    records,
+    Record
+  );
+
+  const genreData = await populateField(
+    { fieldName: "genre" },
     records,
     Record
   );
@@ -64,35 +71,33 @@ export async function fetchAndPopulateRecords(): Promise<any> {
     })
   );
 
-  return { stockData, conditionData, storeData, shippingInfoInStore };
-}
+  const transformedStoreData = mapFields(
+    storeData,
+    shippingInfoInStore,
+    "shippingInfo"
+  );
 
-function transformRecords(
-  records: any[],
-  stockWithConditionData: any[],
-  stockWithStoreData: any[],
-  genreData: any[]
-): any[] {
-  return records.map((record, index) => {
-    const stockConditions = mapStockData(
-      stockWithConditionData,
-      index,
-      "condition"
-    );
-    const stockPrice = mapStockData(stockWithConditionData, index, "price");
-    const stockStore = mapStockData(stockWithStoreData, index, "store");
-    return {
-      ...record.toObject(),
-      genre: genreData[index],
-      stock: stockConditions.map((condition: any, i: number) => ({
-        condition,
-        price: stockPrice[i],
-        store: stockStore[i],
-      })),
-    };
-  });
-}
+  const transformedStockWithStores = mapFields(
+    stockData,
+    transformedStoreData,
+    "stock",
+    "store"
+  );
 
-function mapStockData(stockData: any[], index: number, field: string): any[] {
-  return stockData[index]?.stock.map((item: any) => item[field]) ?? [];
+  const populatedStocks = mapFields(
+    transformedStockWithStores,
+    conditionData,
+    "stock",
+    "condition"
+  );
+
+  const recordsWithGenres = mapFields(records, genreData, "genre");
+
+  const populatedRecords = mapFields(
+    recordsWithGenres,
+    populatedStocks,
+    "stock"
+  );
+
+  return populatedRecords;
 }

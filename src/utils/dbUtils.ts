@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// TODO types in all functions
+
 interface PopulateFieldOptions {
   fieldName: string;
   unwind?: string;
@@ -118,4 +120,68 @@ async function populateWithoutUnwind(
   );
 
   return populatedDocuments;
+}
+
+export function mapFields(
+  mainData: any[][] | any[],
+  relatedData: any[][],
+  fieldName: string,
+  nestedFieldName?: string
+): any[][] {
+  const idMap = new Map<string, any>();
+
+  relatedData.forEach((item: any) => {
+    if (Array.isArray(item)) {
+      item.forEach((doc: any) => {
+        idMap.set(doc._id.toString(), doc);
+      });
+    } else if (item && typeof item === "object") {
+      idMap.set(item._id.toString(), item);
+    }
+  });
+
+  if (Array.isArray(mainData[0])) {
+    const mappedData = mainData.map((dataArray) => {
+      return dataArray.map((data: any) => {
+        return replaceField(data, fieldName, idMap);
+      });
+    });
+    return mappedData;
+  } else {
+    const mappedData = mainData.map((data: any) => {
+      return replaceField(data, fieldName, idMap, nestedFieldName);
+    });
+    return mappedData;
+  }
+}
+
+function replaceField(
+  data: any,
+  fieldName: string,
+  idMap: Map<string, any>,
+  nestedFieldName?: string
+): any {
+  if (Array.isArray(data[fieldName]) && data[fieldName] && nestedFieldName) {
+    const transformedField = data[fieldName].map((item: any) => {
+      const nestedData = idMap.get(item[nestedFieldName].toString());
+      return { ...item, [nestedFieldName]: nestedData };
+    });
+    return { ...data, [fieldName]: transformedField };
+  }
+
+  if (data[fieldName]) {
+    let relatedDoc = idMap.get(data[fieldName].toString());
+    relatedDoc = convertToPlainObject(relatedDoc);
+    data = convertToPlainObject(data);
+
+    return { ...data, [fieldName]: relatedDoc };
+  }
+  return data;
+}
+
+function convertToPlainObject(data: any): any {
+  if (data instanceof mongoose.Document) {
+    return data.toObject();
+  }
+  return data;
 }
