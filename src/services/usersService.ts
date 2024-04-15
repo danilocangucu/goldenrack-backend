@@ -1,4 +1,4 @@
-import User, { UserDocument } from "../model/User";
+import User, { UserDocument } from "../models/User";
 import {
   comparePasswords,
   generateAuthToken,

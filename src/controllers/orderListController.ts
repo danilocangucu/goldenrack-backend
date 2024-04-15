@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import orderListService from "../services/orderListService";
 import { validateOrder } from "../utils/ordersUtils";
-import OrderList from "../model/OrderList";
+import OrderList from "../models/OrderList";
 
 export async function getOrderListHandler(req: Request, res: Response) {
   try {

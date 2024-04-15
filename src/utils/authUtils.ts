@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 import { JwtProperty } from "../types/JwtProperty";
 import { DecodedJwtPayload } from "../types/DecodedJwtPayload";
-import User, { UserDocument } from "../model/User";
+import User, { UserDocument } from "../models/User";
 import { UserData } from "../types/UserData";
 import { RoleData } from "../types/RoleData";
 

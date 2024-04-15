@@ -1,4 +1,4 @@
-import User, { UserDocument } from "../model/User";
+import User, { UserDocument } from "../models/User";
 import { UserData } from "../types/UserData";
 import {
   isUserNameUnique,
@@ -10,7 +10,7 @@ import {
   extractPropertyFromJwt,
 } from "../utils/authUtils";
 import { JwtProperty } from "../types/JwtProperty";
-import OrderList from "../model/OrderList";
+import OrderList from "../models/OrderList";
 import { RoleData } from "../types/RoleData";
 
 async function registerUser(userData: UserData) {

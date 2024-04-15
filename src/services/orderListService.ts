@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Order from "../model/Order";
-import OrderList from "../model/OrderList";
+import Order from "../models/Order";
+import OrderList from "../models/OrderList";
 import { OrderData } from "../types/OrderData";
 import {
   findOrderListById,
