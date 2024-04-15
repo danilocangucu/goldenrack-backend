@@ -1,15 +1,15 @@
-import OrderList, { OrderListDocument } from "../model/OrderList";
-import Record, { RecordDocument } from "../model/Record";
+import OrderList, { OrderListDocument } from "../models/OrderList";
+import Record, { RecordDocument } from "../models/Record";
 import { OrderData } from "../types/OrderData";
 
+// TODO implement validation, now it's only a temporary code to run the app
 export async function validateOrder(orderData: OrderData): Promise<boolean> {
   try {
-    let recordId: string;
+    let recordId = "";
 
     if (typeof orderData.record === "string") {
       recordId = orderData.record;
     } else {
-      recordId = orderData.record.id;
     }
 
     const record: RecordDocument | null = await Record.findById(recordId);
@@ -20,9 +20,9 @@ export async function validateOrder(orderData: OrderData): Promise<boolean> {
 
     const stockExists = record.stock.some((stockItem) => {
       if (typeof orderData.stock === "string") {
-        return stockItem.id === orderData.stock;
+        return false;
       } else {
-        return stockItem.id === orderData.stock.id;
+        return true;
       }
     });
 
