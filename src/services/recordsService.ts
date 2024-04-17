@@ -1,20 +1,21 @@
 import { GetRecords, RecordData } from "../types/RecordData";
-import { fetchAndPopulateRecords } from "../utils/recordsUtils";
+import {
+  applyValidSearchCriteria,
+  fetchAndPopulateRecords,
+} from "../utils/recordsUtils";
 
 const getAllRecords = async ({
-  searchQuery,
-  minPrice,
-  maxPrice,
+  search,
+  genres,
+  price,
+  pagination,
 }: GetRecords): Promise<RecordData[]> => {
+  // TODO type
   const query: any = {};
 
-  if (searchQuery) {
-    query.model = { $regex: searchQuery, $options: "i" };
-  }
+  applyValidSearchCriteria(query, search);
 
-  query["stock.price"] = { $gte: minPrice, $lte: maxPrice };
-
-  return await fetchAndPopulateRecords();
+  return await fetchAndPopulateRecords(query, genres, price, pagination);
 };
 
 export default {

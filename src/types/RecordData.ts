@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
-import { StockData } from "./StockData";
+// TODO fix StockData & stock field in RecordData
+// import { StockData } from "./StockData";
 import { Document } from "mongoose";
 
 export interface RecordData {
@@ -9,15 +10,23 @@ export interface RecordData {
   artist: string;
   description: string;
   year: number;
-  stock: (StockData | Types.ObjectId)[];
+  stock: any;
 }
 
 export interface GetRecords {
-  limit: number;
-  offset: number;
-  searchQuery?: string;
-  minPrice?: number;
-  maxPrice?: number;
+  search?: {
+    artist?: string;
+    title?: string;
+  };
+  genres?: string;
+  price?: {
+    min?: number;
+    max?: number;
+  };
+  pagination?: {
+    limit?: number;
+    offset?: number;
+  };
 }
 
 export interface IdBaseData {
