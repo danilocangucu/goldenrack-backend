@@ -159,23 +159,3 @@ export async function updateUser(request: Request, response: Response) {
     });
   }
 }
-
-export async function postNewUser(req: Request, res: Response) {
-  try {
-    const newData = new User(req.body);
-    const newUser = await userService.createNewUser(newData);
-
-    if (!newData.firstName || !newData.lastName) {
-      return res
-        .status(400)
-        .json({ message: "Firstname and Lastname are required" });
-    }
-    res.status(201).json({
-      data: newUser,
-      message: "New user added successfully",
-      status: "success",
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
