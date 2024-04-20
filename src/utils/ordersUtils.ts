@@ -18,7 +18,9 @@ export async function validateOrder(orderData: OrderData): Promise<boolean> {
       throw new Error("Record not found");
     }
 
-    const stockExists = record.stock.some((stockItem) => {
+    // TODO fix stockItem type
+
+    const stockExists = record.stock.some((stockItem: any) => {
       if (typeof orderData.stock === "string") {
         return false;
       } else {
