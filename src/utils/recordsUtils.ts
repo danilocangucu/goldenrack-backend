@@ -137,6 +137,78 @@ export async function fetchAndPopulateRecords(
   return populatedRecords;
 }
 
+export async function fectchAndPopulateRecordById(id: string) {
+  const foundRecord = await Record.findById(id);
+
+  const stockData = await populateField(
+    { fieldName: "stock" },
+    [foundRecord]!,
+    Record
+  );
+
+  const genreData = await populateField(
+    { fieldName: "genre" },
+    [foundRecord]!,
+    Record
+  );
+
+  const conditionData = await populateField(
+    { fieldName: "condition", unwind: "stock" },
+    stockData,
+    Stock
+  );
+
+  const storeData = await populateField(
+    { fieldName: "store", unwind: "stock" },
+    stockData,
+    Stock
+  );
+
+  const shippingInfoInStore = await Promise.all(
+    storeData.map(async (storesInRecord) => {
+      const shippingInfoPromise = populateField(
+        {
+          fieldName: "shippingInfo",
+          extraMatch: "_id",
+        },
+        storesInRecord,
+        Store
+      );
+      return await shippingInfoPromise;
+    })
+  );
+
+  const transformedStoreData = mapFields(
+    storeData,
+    shippingInfoInStore,
+    "shippingInfo"
+  );
+
+  const transformedStockWithStores = mapFields(
+    stockData,
+    transformedStoreData,
+    "stock",
+    "store"
+  );
+
+  const populatedStocks = mapFields(
+    transformedStockWithStores,
+    conditionData,
+    "stock",
+    "condition"
+  );
+
+  const recordsWithGenres = mapFields([foundRecord], genreData, "genre");
+
+  const populatedRecords = mapFields(
+    recordsWithGenres,
+    populatedStocks,
+    "stock"
+  );
+
+  return populatedRecords;
+}
+
 function filterRecordsByPrice(records: any, minPrice: any, maxPrice: any) {
   return records.filter((record: any) => {
     if (record.stock && Array.isArray(record.stock)) {
@@ -204,9 +276,15 @@ export function applyValidSearchCriteria(query: any, search: any) {
   }
 }
 
-function parseGenres(genres: string | undefined) {
+function parseGenres(genres: string[] | string | undefined) {
   if (!genres) return [];
-  return genres.split(",").map((genre) => genre.trim());
+
+  if (typeof genres == "string") {
+    genres = [genres];
+  }
+  return genres.map((genre) => {
+    return genre.toLowerCase();
+  });
 }
 
 function updateStockData(filteredRecords: any[], stockData: any[]): any[] {

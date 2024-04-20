@@ -29,6 +29,10 @@ export interface GetRecords {
   };
 }
 
+export interface GetRecordById {
+  id: string;
+}
+
 export interface IdBaseData {
   _id: string | Types.ObjectId;
 }

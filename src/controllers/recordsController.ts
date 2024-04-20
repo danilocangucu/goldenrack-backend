@@ -30,3 +30,21 @@ export async function getAllRecordsHandler(req: Request, res: Response) {
     }
   }
 }
+
+// TODO handle errors with boom and refactoring getRecordByIdHandler
+export async function getRecordByIdHandler(req: Request, res: Response) {
+  try {
+    const id = req.params.id;
+
+    const [foundRecord] = await recordsServices.getRecordById({ id });
+    res.send(foundRecord);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getGenresHandler(req: Request, res: Response) {
+  // todo error handling for getGenresHandler
+  const genres = await recordsServices.getGenres();
+  res.send(genres);
+}
