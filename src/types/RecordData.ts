@@ -25,8 +25,9 @@ export interface GetRecords {
   };
   pagination?: {
     limit?: number;
-    offset?: number;
+    page?: number;
   };
+  sortPrice?: SortPrice;
 }
 
 export interface GetRecordById {
@@ -71,3 +72,5 @@ export enum RecordGenre {
 }
 
 export interface ExtendedRecordData extends Omit<RecordData, "_id">, Document {}
+
+export type SortPrice = "asc" | "desc";

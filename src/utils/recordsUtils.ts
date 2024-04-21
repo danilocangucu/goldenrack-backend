@@ -4,47 +4,53 @@ import Record from "../models/Record";
 import { mapFields, populateField } from "./dbUtils";
 import Stock from "../models/Stock";
 import Store from "../models/Store";
+import { SortPrice } from "../types/RecordData";
 
 const DEFAULT_LIMIT = process.env.DEFAULT_LIMIT_QUERY;
-const DEFAULT_OFFSET = process.env.DEFAULT_OFFSET_QUERY;
+const DEFAULT_PAGE = process.env.DEFAULT_PAGE_QUERY;
 const DEFAULT_SEARCH_ARTIST = process.env.DEFAULT_SEARCH_ARTIST_QUERY;
 const DEFAULT_SEARCH_TITLE = process.env.DEFAULT_SEARCH_TITLE_QUERY;
 const DEFAULT_GENRES = process.env.DEFAULT_GENRES_QUERY || undefined;
 const DEFAULT_MIN_PRICE = process.env.DEFAULT_MIN_PRICE_QUERY;
 const DEFAULT_MAX_PRICE = process.env.DEFAULT_MAX_PRICE_QUERY;
+const DEFAULT_SORT_PRICE = process.env.DEFAULT_SORT_PRICE_QUERY;
 
 export function parseRecordsQueryParams(req: Request) {
   const {
     limit = DEFAULT_LIMIT,
-    offset = DEFAULT_OFFSET,
+    page = DEFAULT_PAGE,
     artist = DEFAULT_SEARCH_ARTIST,
     title = DEFAULT_SEARCH_TITLE,
     genres = DEFAULT_GENRES,
     min = DEFAULT_MIN_PRICE,
     max = DEFAULT_MAX_PRICE,
+    sortPrice = DEFAULT_SORT_PRICE,
   } = req.query;
 
   return {
     limit: Number(limit),
-    offset: Number(offset),
+    page: Number(page),
     artist: artist as string,
     title: title as string,
     genres: genres === "undefined" ? undefined : (genres as string),
     min: Number(min),
     max: Number(max),
+    sortPrice: sortPrice as SortPrice,
   };
 }
 
 // TODO refactoring for calling populateField & mapField
+// TODO refactoring fetchAndPopulateRecords: optional parameters that will always come from parseRecordsQueryParams
 export async function fetchAndPopulateRecords(
   query?: any,
   genres?: any,
   price?: any,
-  pagination?: any
+  pagination?: any,
+  sortPrice?: SortPrice
 ): Promise<any> {
-  const { limit, offset } = pagination;
+  const { limit, page } = pagination;
 
-  const queryBuilder = Record.find(query).limit(limit).skip(offset);
+  const queryBuilder = Record.find(query);
   const queryRecords = await queryBuilder.exec();
 
   let filteredRecords = queryRecords;
@@ -64,6 +70,9 @@ export async function fetchAndPopulateRecords(
     );
   }
 
+  stockData = sortStockDataByPrice(stockData, sortPrice!);
+  filteredRecords = updateFilteredRecordsOrder(stockData, filteredRecords);
+
   let genreData = await populateField(
     { fieldName: "genre" },
     filteredRecords,
@@ -79,6 +88,14 @@ export async function fetchAndPopulateRecords(
     );
     stockData = updateStockData(filteredRecords, stockData);
   }
+
+  const { paginatedRecords, totalPages } = paginateRecords(
+    filteredRecords,
+    page,
+    limit
+  );
+
+  filteredRecords = paginatedRecords;
 
   const conditionData = await populateField(
     { fieldName: "condition", unwind: "stock" },
@@ -134,7 +151,7 @@ export async function fetchAndPopulateRecords(
     "stock"
   );
 
-  return populatedRecords;
+  return { records: populatedRecords, totalPages };
 }
 
 export async function fectchAndPopulateRecordById(id: string) {
@@ -200,13 +217,13 @@ export async function fectchAndPopulateRecordById(id: string) {
 
   const recordsWithGenres = mapFields([foundRecord], genreData, "genre");
 
-  const populatedRecords = mapFields(
+  const populatedRecord = mapFields(
     recordsWithGenres,
     populatedStocks,
     "stock"
   );
 
-  return populatedRecords;
+  return populatedRecord;
 }
 
 function filterRecordsByPrice(records: any, minPrice: any, maxPrice: any) {
@@ -314,4 +331,50 @@ function filterGenreData(genreData: any[], parsedGenres: any[]): any[] {
   return genreData.filter((genre) =>
     parsedGenres.includes(genre.name.toLowerCase())
   );
+}
+
+function paginateRecords(records: any[], page: number, limit: number) {
+  const offset = (page - 1) * limit;
+  const totalPages = Math.ceil(records.length / limit);
+  const paginatedRecords = records.slice(offset, offset + limit);
+
+  return {
+    paginatedRecords,
+    totalPages,
+  };
+}
+
+function sortStockDataByPrice(stockData: any[], sortPrice: SortPrice): any[] {
+  let sortedStockData = stockData.map((record) => {
+    let sortedStock = [...record.stock].sort((a, b) =>
+      sortPrice === "asc" ? a.price - b.price : b.price - a.price
+    );
+    return { ...record, stock: sortedStock };
+  });
+
+  sortedStockData.sort((a, b) => {
+    const lowestPriceA = a.stock[0].price; // After sorting, the first item will be the lowest/highest
+    const lowestPriceB = b.stock[0].price;
+    return sortPrice === "asc"
+      ? lowestPriceA - lowestPriceB
+      : lowestPriceB - lowestPriceA;
+  });
+
+  return sortedStockData;
+}
+
+function updateFilteredRecordsOrder(
+  sortedStockData: any[],
+  filteredRecords: any[]
+): any[] {
+  const sortedRecords = sortedStockData
+    .map((sortedRecord) => {
+      return filteredRecords.find(
+        (filteredRecord) =>
+          String(filteredRecord.stock) === String(sortedRecord._id)
+      );
+    })
+    .filter((record) => record !== undefined); // Filter out any undefined entries that may result from the find operation
+
+  return sortedRecords;
 }

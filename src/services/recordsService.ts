@@ -11,13 +11,20 @@ const getAllRecords = async ({
   genres,
   price,
   pagination,
+  sortPrice,
 }: GetRecords): Promise<RecordData[]> => {
   // TODO typing in this file
   const query: any = {};
 
   applyValidSearchCriteria(query, search);
 
-  return await fetchAndPopulateRecords(query, genres, price, pagination);
+  return await fetchAndPopulateRecords(
+    query,
+    genres,
+    price,
+    pagination,
+    sortPrice
+  );
 };
 
 // TODO error handling, refactoring getRecordById

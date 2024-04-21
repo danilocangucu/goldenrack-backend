@@ -5,14 +5,15 @@ import { parseRecordsQueryParams } from "../utils/recordsUtils";
 
 export async function getAllRecordsHandler(req: Request, res: Response) {
   try {
-    const { limit, offset, artist, title, genres, min, max } =
+    const { limit, page, artist, title, genres, min, max, sortPrice } =
       parseRecordsQueryParams(req);
 
     const records = await recordsServices.getAllRecords({
       search: { artist, title },
       genres,
       price: { min, max },
-      pagination: { limit, offset },
+      pagination: { limit, page },
+      sortPrice,
     });
 
     res.status(200).json({
