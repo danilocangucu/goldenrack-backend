@@ -1,29 +1,32 @@
 import mongoose from "mongoose";
-import Order from "../models/Order";
+import Order, { OrderDocument } from "../models/Order";
 import OrderList from "../models/OrderList";
 import { OrderData } from "../types/OrderData";
-import {
-  findOrderListById,
-  sanitizeOrder,
-  sanitizeOrderList,
-} from "../utils/ordersUtils";
+import { findOrderListById, sanitizeOrder } from "../utils/ordersUtils";
+import Record from "../models/Record";
+import StockItem from "../models/StockItem";
+import Store from "../models/Store";
 
 async function getOrderList(orderListId: string) {
   try {
-    const orderList = await OrderList.findById(orderListId).populate({
-      path: "orders",
-      populate: {
-        path: "carId",
-        populate: [
-          { path: "brand", select: { _id: 0 } },
-          { path: "conditions", select: { _id: 0 } },
-        ],
-        select: { _id: 0, __v: 0 },
-      },
-    });
+    const orderList = await OrderList.findById(orderListId);
 
     if (orderList) {
-      return sanitizeOrderList(orderList);
+      const result = await Promise.all(
+        orderList.orders.map(async (order: any) => {
+          const foundOrder = await Order.findById(order);
+          if (foundOrder) {
+            const record = await Record.findById(foundOrder.record);
+            const stockItem = await StockItem.findById(foundOrder.stockItem);
+            const store = stockItem
+              ? await Store.findById(stockItem.store)
+              : null;
+            return { record, stockItem, store };
+          }
+          return null;
+        })
+      );
+      return { orderList, orders: result };
     }
     return null;
   } catch (error) {
@@ -31,21 +34,21 @@ async function getOrderList(orderListId: string) {
   }
 }
 
-async function addOrderToOrderList(orderListId: string, orderData: OrderData) {
+async function addOrderToOrderList(
+  orderListId: string,
+  orderData: OrderDocument
+) {
   try {
     const orderList = await OrderList.findById(orderListId);
     if (!orderList) {
       throw new Error("Order list not found");
     }
 
-    const order = new Order(orderData);
-    await order.save();
-
-    orderList.orders.push(order._id);
+    orderList.orders.push(orderData._id);
 
     await orderList.save();
 
-    return sanitizeOrder(order);
+    return sanitizeOrder(orderData);
   } catch (error) {
     throw error;
   }

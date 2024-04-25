@@ -58,7 +58,14 @@ async function populateWithUnwind(
         {
           $group: {
             _id: "$_id",
-            [unwind]: { $push: `$${unwind}` },
+            [unwind]: {
+              $push: {
+                $mergeObjects: [
+                  `$${unwind}`,
+                  { [fieldName]: { $arrayElemAt: [`$${fieldName}Data`, 0] } },
+                ],
+              },
+            },
           },
         },
       ]);
@@ -118,6 +125,7 @@ async function populateWithoutUnwind(
   const populatedDocuments = populatedFields.map(
     (field: any) => field[fieldName]
   );
+
 
   return populatedDocuments;
 }

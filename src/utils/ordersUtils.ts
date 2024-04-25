@@ -1,40 +1,75 @@
+import Order from "../models/Order";
 import OrderList, { OrderListDocument } from "../models/OrderList";
-import Record, { RecordDocument } from "../models/Record";
+import { OrderDocument } from "../models/Order";
+import Record from "../models/Record";
+import Stock from "../models/Stock";
 import { OrderData } from "../types/OrderData";
+import { populateField } from "./dbUtils";
+import { mergeStockData } from "./recordsUtils";
 
 // TODO implement validation, now it's only a temporary code to run the app
-export async function validateOrder(orderData: OrderData): Promise<boolean> {
+export async function validateOrder(
+  orderData: OrderData
+): Promise<OrderDocument | boolean> {
   try {
-    let recordId = "";
-
-    if (typeof orderData.record === "string") {
-      recordId = orderData.record;
-    } else {
+    const foundRecord = await Record.findById(orderData.record);
+    if (!foundRecord) {
+      return false;
     }
 
-    const record: RecordDocument | null = await Record.findById(recordId);
+    const stock = await Stock.findById(orderData.stock);
 
-    if (!record) {
-      throw new Error("Record not found");
+    if (!stock) {
+      return false;
     }
 
-    // TODO fix stockItem type
+    let stockDataBefore = await populateField(
+      { fieldName: "stock" },
+      [foundRecord],
+      Record
+    );
 
-    const stockExists = record.stock.some((stockItem: any) => {
-      if (typeof orderData.stock === "string") {
+    let stockDataAfter = await populateField(
+      { fieldName: "stockItem", unwind: "stockItems" },
+      stockDataBefore,
+      Stock
+    );
+
+    let mergedStockData = mergeStockData(stockDataBefore, stockDataAfter);
+    let price = 0;
+
+    if (Array.isArray(mergedStockData)) {
+      const [isStockItem] = mergedStockData.map((stockItem) => {
+        if (stockItem.stockItems) {
+          if (Array.isArray(stockItem.stockItems)) {
+            return stockItem.stockItems.map((item: any) => {
+              if (item._id.toString() === orderData.stockItem) {
+                price = item.price;
+                return true;
+              } else {
+                return false;
+              }
+            });
+          } else {
+            return [];
+          }
+        }
+      });
+
+      if (!isStockItem.includes(true)) {
         return false;
-      } else {
-        return true;
       }
+    }
+
+    const newOrder = new Order({
+      record: orderData.record,
+      stockItem: orderData.stockItem,
+      price,
     });
 
-    if (!stockExists) {
-      throw new Error("The requested record does not exist in stock");
-    }
-
-    return true;
+    return await newOrder.save();
   } catch (error) {
-    console.error("Error validating order sum:", error);
+    console.error("Error validating order:", error);
     return false;
   }
 }

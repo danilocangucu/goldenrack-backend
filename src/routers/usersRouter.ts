@@ -17,7 +17,8 @@ import { isAdmin } from "../middlewares/isAdmin";
 
 const usersRouter = express.Router();
 
-usersRouter.use("/:userId/orderlists", hasPermission, ordersRouter);
+// TODO check hasPermission middleware with "/:userId/orderlists"
+usersRouter.use("/:userId/orderlists", ordersRouter);
 usersRouter.get(
   "/:userId/recover-password",
   isRequestedUser,

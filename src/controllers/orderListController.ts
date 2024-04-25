@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import orderListService from "../services/orderListService";
 import { validateOrder } from "../utils/ordersUtils";
 import OrderList from "../models/OrderList";
+import { OrderDocument } from "../models/Order";
 
 export async function getOrderListHandler(req: Request, res: Response) {
   try {
@@ -30,16 +31,17 @@ export async function addOrderToOrderListHandler(req: Request, res: Response) {
 
     const orderData = req.body;
 
+    // TODO rename/refactor isValidOrderSum
     const isValidOrderSum = await validateOrder(orderData);
     if (!isValidOrderSum) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid orderSum" });
+        .json({ status: "error", message: "Invalid order" });
     }
 
     const newOrder = await orderListService.addOrderToOrderList(
       orderListId,
-      orderData
+      isValidOrderSum as OrderDocument
     );
     res.status(201).json({
       status: "success",

@@ -37,7 +37,8 @@ export async function getRecordByIdHandler(req: Request, res: Response) {
   try {
     const id = req.params.id;
 
-    const [foundRecord] = await recordsServices.getRecordById({ id });
+    const foundRecord = await recordsServices.getRecordById({ id });
+
     res.send(foundRecord);
   } catch (error) {
     console.error(error);

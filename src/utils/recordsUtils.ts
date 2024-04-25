@@ -5,6 +5,14 @@ import { mapFields, populateField } from "./dbUtils";
 import Stock from "../models/Stock";
 import Store from "../models/Store";
 import { SortPrice } from "../types/RecordData";
+import StockItem from "../models/StockItem";
+
+interface IStockItem {
+  // TODO check properties according to StockItem schema
+  name: string;
+  price: number;
+  condition: string;
+}
 
 const DEFAULT_LIMIT = process.env.DEFAULT_LIMIT_QUERY;
 const DEFAULT_PAGE = process.env.DEFAULT_PAGE_QUERY;
@@ -55,23 +63,38 @@ export async function fetchAndPopulateRecords(
 
   let filteredRecords = queryRecords;
 
-  let stockData = await populateField(
+  let stockDataBefore = await populateField(
     { fieldName: "stock" },
     filteredRecords,
     Record
   );
 
+  let stockDataAfter = await populateField(
+    { fieldName: "stockItem", unwind: "stockItems" },
+    stockDataBefore,
+    Stock
+  );
+
+  let mergedStockData = mergeStockData(stockDataBefore, stockDataAfter);
+
   if (!isPriceDefault(price)) {
-    stockData = filterRecordsByPrice(stockData, price.min, price.max);
+    mergedStockData = filterRecordsByPrice(
+      mergedStockData,
+      price.min,
+      price.max
+    );
     filteredRecords = updateFilteredRecords(
       filteredRecords,
       "stock",
-      stockData
+      mergedStockData
     );
   }
 
-  stockData = sortStockDataByPrice(stockData, sortPrice!);
-  filteredRecords = updateFilteredRecordsOrder(stockData, filteredRecords);
+  mergedStockData = sortStockDataByPrice(mergedStockData, sortPrice!);
+  filteredRecords = updateFilteredRecordsOrder(
+    mergedStockData,
+    filteredRecords
+  );
 
   let genreData = await populateField(
     { fieldName: "genre" },
@@ -86,7 +109,7 @@ export async function fetchAndPopulateRecords(
       "genre",
       genreData
     );
-    stockData = updateStockData(filteredRecords, stockData);
+    mergedStockData = updateStockData(filteredRecords, mergedStockData);
   }
 
   const { paginatedRecords, totalPages } = paginateRecords(
@@ -97,16 +120,32 @@ export async function fetchAndPopulateRecords(
 
   filteredRecords = paginatedRecords;
 
-  const conditionData = await populateField(
-    { fieldName: "condition", unwind: "stock" },
-    stockData,
-    Stock
+  const conditionData = await Promise.all(
+    mergedStockData.map(async (mergedStock: any) => {
+      if (mergedStock.stockItems && Array.isArray(mergedStock.stockItems)) {
+        const conditionData = await populateField(
+          { fieldName: "condition", extraMatch: "_id" },
+          mergedStock.stockItems,
+          StockItem
+        );
+        return conditionData;
+      }
+      return null;
+    })
   );
 
-  const storeData = await populateField(
-    { fieldName: "store", unwind: "stock" },
-    stockData,
-    Stock
+  const storeData = await Promise.all(
+    mergedStockData.map(async (mergedStock: any) => {
+      if (mergedStock.stockItems && Array.isArray(mergedStock.stockItems)) {
+        const storeData = await populateField(
+          { fieldName: "store", extraMatch: "_id" },
+          mergedStock.stockItems,
+          StockItem
+        );
+        return storeData;
+      }
+      return null;
+    })
   );
 
   const shippingInfoInStore = await Promise.all(
@@ -116,7 +155,7 @@ export async function fetchAndPopulateRecords(
           fieldName: "shippingInfo",
           extraMatch: "_id",
         },
-        storesInRecord,
+        storesInRecord!,
         Store
       );
       return await shippingInfoPromise;
@@ -130,16 +169,16 @@ export async function fetchAndPopulateRecords(
   );
 
   const transformedStockWithStores = mapFields(
-    stockData,
+    mergedStockData,
     transformedStoreData,
-    "stock",
+    "stockItems",
     "store"
   );
 
   const populatedStocks = mapFields(
     transformedStockWithStores,
-    conditionData,
-    "stock",
+    conditionData.filter((item: any): item is any[] => item !== null),
+    "stockItems",
     "condition"
   );
 
@@ -157,10 +196,16 @@ export async function fetchAndPopulateRecords(
 export async function fectchAndPopulateRecordById(id: string) {
   const foundRecord = await Record.findById(id);
 
-  const stockData = await populateField(
+  let stockDataBefore = await populateField(
     { fieldName: "stock" },
-    [foundRecord]!,
+    [foundRecord],
     Record
+  );
+
+  let stockDataAfter = await populateField(
+    { fieldName: "stockItem", unwind: "stockItems" },
+    stockDataBefore,
+    Stock
   );
 
   const genreData = await populateField(
@@ -169,16 +214,34 @@ export async function fectchAndPopulateRecordById(id: string) {
     Record
   );
 
-  const conditionData = await populateField(
-    { fieldName: "condition", unwind: "stock" },
-    stockData,
-    Stock
+  let mergedStockData = mergeStockData(stockDataBefore, stockDataAfter);
+
+  const conditionData = await Promise.all(
+    mergedStockData.map(async (mergedStock: any) => {
+      if (mergedStock.stockItems && Array.isArray(mergedStock.stockItems)) {
+        const conditionData = await populateField(
+          { fieldName: "condition", extraMatch: "_id" },
+          mergedStock.stockItems,
+          StockItem
+        );
+        return conditionData;
+      }
+      return null;
+    })
   );
 
-  const storeData = await populateField(
-    { fieldName: "store", unwind: "stock" },
-    stockData,
-    Stock
+  const storeData = await Promise.all(
+    mergedStockData.map(async (mergedStock: any) => {
+      if (mergedStock.stockItems && Array.isArray(mergedStock.stockItems)) {
+        const storeData = await populateField(
+          { fieldName: "store", extraMatch: "_id" },
+          mergedStock.stockItems,
+          StockItem
+        );
+        return storeData;
+      }
+      return null;
+    })
   );
 
   const shippingInfoInStore = await Promise.all(
@@ -188,7 +251,7 @@ export async function fectchAndPopulateRecordById(id: string) {
           fieldName: "shippingInfo",
           extraMatch: "_id",
         },
-        storesInRecord,
+        storesInRecord!,
         Store
       );
       return await shippingInfoPromise;
@@ -202,48 +265,39 @@ export async function fectchAndPopulateRecordById(id: string) {
   );
 
   const transformedStockWithStores = mapFields(
-    stockData,
+    mergedStockData,
     transformedStoreData,
-    "stock",
+    "stockItems",
     "store"
   );
 
   const populatedStocks = mapFields(
     transformedStockWithStores,
-    conditionData,
-    "stock",
+    conditionData.filter((item: any): item is any[] => item !== null),
+    "stockItems",
     "condition"
   );
 
-  const recordsWithGenres = mapFields([foundRecord], genreData, "genre");
+  const recordWithGenre = mapFields([foundRecord], genreData, "genre");
 
-  const populatedRecord = mapFields(
-    recordsWithGenres,
-    populatedStocks,
-    "stock"
-  );
+  const populatedRecord = mapFields(recordWithGenre, populatedStocks, "stock");
 
   return populatedRecord;
 }
 
-function filterRecordsByPrice(records: any, minPrice: any, maxPrice: any) {
-  return records.filter((record: any) => {
-    if (record.stock && Array.isArray(record.stock)) {
-      const filteredStock = record.stock.filter((item: any) => {
-        const price = item.price;
-        return price >= minPrice && price <= maxPrice;
-      });
+function filterRecordsByPrice(
+  records: any[][],
+  minPrice: number,
+  maxPrice: number
+): any[][] {
+  const testResult = records.filter((record: any) =>
+    record.stockItems.some(
+      (stockItem: any) =>
+        stockItem.price >= minPrice && stockItem.price <= maxPrice
+    )
+  );
 
-      if (filteredStock.length > 0) {
-        record.stock = filteredStock;
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    return false;
-  });
+  return testResult;
 }
 
 export function updateFilteredRecords(
@@ -255,7 +309,7 @@ export function updateFilteredRecords(
     const matchingItem = filterData.find((item) => {
       return String(item._id) === String(record[filterKey]?._id);
     });
-    return !!matchingItem; // Keep only records that have a matching item for the specified key
+    return !!matchingItem;
   });
 
   return updatedRecords;
@@ -327,6 +381,8 @@ function isPriceDefault(price: { min: number; max: number }): boolean {
   );
 }
 
+// TODO handle errors while parsing
+
 function filterGenreData(genreData: any[], parsedGenres: any[]): any[] {
   return genreData.filter((genre) =>
     parsedGenres.includes(genre.name.toLowerCase())
@@ -345,21 +401,20 @@ function paginateRecords(records: any[], page: number, limit: number) {
 }
 
 function sortStockDataByPrice(stockData: any[], sortPrice: SortPrice): any[] {
-  let sortedStockData = stockData.map((record) => {
-    let sortedStock = [...record.stock].sort((a, b) =>
-      sortPrice === "asc" ? a.price - b.price : b.price - a.price
-    );
-    return { ...record, stock: sortedStock };
+  let sortedStockData = stockData.map((dataItem) => {
+    if (dataItem.stockItems && Array.isArray(dataItem.stockItems)) {
+      let sortedStockItems = dataItem.stockItems.sort((a: any, b: any) =>
+        sortPrice === "asc" ? a.price - b.price : b.price - a.price
+      );
+      return { ...dataItem, stockItems: sortedStockItems };
+    }
+    return dataItem;
   });
-
-  sortedStockData.sort((a, b) => {
-    const lowestPriceA = a.stock[0].price; // After sorting, the first item will be the lowest/highest
-    const lowestPriceB = b.stock[0].price;
-    return sortPrice === "asc"
-      ? lowestPriceA - lowestPriceB
-      : lowestPriceB - lowestPriceA;
-  });
-
+  sortedStockData = sortedStockData.sort((a: any, b: any) =>
+    sortPrice === "asc"
+      ? a.stockItems[0].price - b.stockItems[0].price
+      : b.stockItems[0].price - a.stockItems[0].price
+  );
   return sortedStockData;
 }
 
@@ -369,12 +424,35 @@ function updateFilteredRecordsOrder(
 ): any[] {
   const sortedRecords = sortedStockData
     .map((sortedRecord) => {
-      return filteredRecords.find(
-        (filteredRecord) =>
-          String(filteredRecord.stock) === String(sortedRecord._id)
-      );
+      return filteredRecords.find((filteredRecord) => {
+        return String(filteredRecord.stock) === String(sortedRecord._id);
+      });
     })
-    .filter((record) => record !== undefined); // Filter out any undefined entries that may result from the find operation
+    .filter((record) => record !== undefined);
 
   return sortedRecords;
+}
+
+export function mergeStockData(
+  stockDataBefore: any[],
+  stockDataAfter: any[][]
+): any[] {
+  stockDataBefore.forEach((beforeItem, index) => {
+    beforeItem.stockItems.forEach((stockItem: any, siIndex: number) => {
+      if (stockDataAfter[index] && stockDataAfter[index][siIndex]) {
+        beforeItem.stockItems[siIndex] = stockDataAfter[index][siIndex];
+      }
+    });
+  });
+
+  return stockDataBefore;
+}
+
+async function fetchStockItemsWithCondition() {
+  try {
+    // TODO error handling for queryResults
+    const queryResults = await StockItem.find();
+  } catch (err) {
+    console.error(err);
+  }
 }
