@@ -4,4 +4,5 @@ export enum JwtProperty {
   IsUserBanned = "isUserBanned",
   IssuedAt = "iat",
   Expiry = "exp",
+  CurrentOrderList = "currentOrderList",
 }

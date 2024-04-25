@@ -4,4 +4,5 @@ export interface DecodedJwtPayload {
   isUserBanned: boolean;
   iat: number;
   exp: number;
+  currentOrderList: string;
 }

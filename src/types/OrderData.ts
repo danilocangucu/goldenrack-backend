@@ -3,8 +3,8 @@ import { RecordData } from "./RecordData";
 import { StockData } from "./StockData";
 
 export interface OrderData {
-  id: string;
   stock: string | StockData;
+  stockItem: string;
   record: string | RecordData;
 }
 
