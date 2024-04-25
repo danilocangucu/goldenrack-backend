@@ -1,27 +1,19 @@
 import mongoose, { Document } from "mongoose";
 import { StockData } from "../types/StockData";
+import { StockItemSchema } from "./StockItem";
 
 export type StockDocument = StockData & Document;
 
-export const StockItemSchema = new mongoose.Schema({
-  condition: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Condition",
-    required: true,
-  },
-  store: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Store",
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-});
-
 export const StockSchema = new mongoose.Schema({
-  stock: [StockItemSchema],
+  stockItems: [
+    {
+      stockItem: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "StockItem",
+        required: true,
+      },
+    },
+  ],
 });
 
 export default mongoose.model<StockDocument>("Stock", StockSchema);

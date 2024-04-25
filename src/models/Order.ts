@@ -9,11 +9,12 @@ export const OrderSchema = new mongoose.Schema({
     ref: "Record",
     required: true,
   },
-  quantity: {
-    type: Number,
+  stockItem: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "StockItem",
     required: true,
   },
-  orderSum: {
+  price: {
     type: Number,
     required: true,
   },
