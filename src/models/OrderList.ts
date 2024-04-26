@@ -10,6 +10,11 @@ const OrderListSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
+  paid: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 });
 
 export default mongoose.model<OrderListDocument>("OrderList", OrderListSchema);

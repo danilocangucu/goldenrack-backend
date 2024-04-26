@@ -5,6 +5,7 @@ import "dotenv/config";
 import recordsRouter from "./routers/recordsRouter";
 import authRouter from "./routers/authRouter";
 import usersRouter from "./routers/usersRouter";
+import paymentsRouter from "./routers/paymentsRouter";
 
 const baseUrl = "/api/v1";
 
@@ -16,5 +17,6 @@ app.use(express.json());
 app.use(`${baseUrl}/records`, recordsRouter);
 app.use(`${baseUrl}/auth`, authRouter);
 app.use(`${baseUrl}/users`, usersRouter);
+app.use(`${baseUrl}/payments`, paymentsRouter);
 
 export default app;

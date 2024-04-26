@@ -89,6 +89,7 @@ export async function updateOrderFromOrderListHandler(
   try {
     const { orderListId, orderId } = req.params;
     const updatedOrderData = req.body;
+
     const updatedOrder = await orderListService.updateOrderFromOrderList(
       orderListId,
       orderId,
@@ -101,6 +102,35 @@ export async function updateOrderFromOrderListHandler(
     });
   } catch (error) {
     console.error("Error updating order in order list:", error);
+    res.status(500).json({ status: "error", message: "Internal server error" });
+  }
+}
+
+export async function patchAndCreateOrderListHandler(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { orderListId } = req.params;
+    const { userId } = req.body;
+
+    if (!orderListId || !userId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid input" });
+    }
+
+    const patchedOrderList = await orderListService.patchAndCreateOrderList(
+      orderListId,
+      userId
+    );
+    res.status(201).json({
+      status: "success",
+      data: patchedOrderList,
+      message: "Order list patched and created",
+    });
+  } catch (error) {
+    console.error("Error patching order list:", error);
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 }

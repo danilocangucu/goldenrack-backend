@@ -6,6 +6,7 @@ import { findOrderListById, sanitizeOrder } from "../utils/ordersUtils";
 import Record from "../models/Record";
 import StockItem from "../models/StockItem";
 import Store from "../models/Store";
+import User from "../models/User";
 
 async function getOrderList(orderListId: string) {
   try {
@@ -114,9 +115,42 @@ async function updateOrderFromOrderList(
   }
 }
 
+async function patchAndCreateOrderList(orderListId: string, userId: string) {
+  try {
+    const existingOrderList = await findOrderListById(orderListId);
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!existingOrderList) {
+      throw new Error("Orderlist doesn't exist");
+    }
+
+    existingOrderList.paid = true;
+    await existingOrderList.save();
+
+    const newOrderList = new OrderList();
+    await newOrderList.save();
+
+    user.orderHistory.push(newOrderList._id);
+    await user.save();
+
+    return {
+      paidOrderList: existingOrderList._id,
+      newOrderList: newOrderList._id,
+    };
+  } catch (error) {
+    console.error("Error patching and creating order list:", error);
+    throw new Error("Failed to patch and create order list");
+  }
+}
+
 export default {
   getOrderList,
   addOrderToOrderList,
   deleteOrderFromOrderList,
   updateOrderFromOrderList,
+  patchAndCreateOrderList,
 };

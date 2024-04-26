@@ -11,4 +11,5 @@ export interface OrderData {
 export interface OrderListData {
   id: string;
   orders: OrderData[] | mongoose.Types.ObjectId[];
+  paid: boolean;
 }

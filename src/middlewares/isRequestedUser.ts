@@ -6,7 +6,11 @@ export function isRequestedUser(
   res: Response,
   next: NextFunction
 ) {
-  const { userId } = req.params;
+  let { userId } = req.params;
+
+  if (!userId) {
+    userId = req.body.userId;
+  }
 
   try {
     const decodedToken = checkAuthorization(req);
