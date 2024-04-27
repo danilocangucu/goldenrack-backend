@@ -11,3 +11,5 @@ export const ConditionSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+export default mongoose.model<ConditionDocument>("Condition", ConditionSchema);
