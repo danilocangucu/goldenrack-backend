@@ -49,6 +49,22 @@ export const StoreSchema = new mongoose.Schema({
     ref: "ShippingInfo",
     required: true,
   },
+  recordsInStock: [
+    {
+      record: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Record",
+        required: true,
+      },
+      stockItems: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "StockItem",
+          required: true,
+        },
+      ],
+    },
+  ],
 });
 
 export default mongoose.model<StoreDocument>("Store", StoreSchema);

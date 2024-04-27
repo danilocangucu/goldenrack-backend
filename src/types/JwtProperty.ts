@@ -5,4 +5,5 @@ export enum JwtProperty {
   IssuedAt = "iat",
   Expiry = "exp",
   CurrentOrderList = "currentOrderList",
+  Store = "store",
 }

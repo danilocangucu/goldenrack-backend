@@ -13,6 +13,12 @@ export interface StoreData {
   shippingInfo: ShippingInfoData;
   returnPolicy: string;
   featuredItems: string[];
+  recordsInStock: RecordInStock[];
+}
+
+interface RecordInStock {
+  record: Types.ObjectId;
+  stockItems: Types.ObjectId[];
 }
 
 export interface ShippingInfoData {

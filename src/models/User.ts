@@ -43,6 +43,11 @@ const UserSchema = new mongoose.Schema({
       ref: "OrderList",
     },
   ],
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+    required: false,
+  },
 });
 
 export default mongoose.model<UserDocument>("Users", UserSchema);

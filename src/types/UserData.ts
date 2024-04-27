@@ -13,6 +13,7 @@ export interface UserData {
   role: RoleData;
   banned: boolean;
   orderHistory: OrderListData[] | mongoose.Types.ObjectId[];
+  store?: string;
 }
 
 export type UserRegistrationData = Partial<

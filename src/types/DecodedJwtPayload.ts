@@ -5,4 +5,5 @@ export interface DecodedJwtPayload {
   iat: number;
   exp: number;
   currentOrderList: string;
+  store?: string;
 }

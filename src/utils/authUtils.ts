@@ -3,15 +3,25 @@ import bcrypt from "bcrypt";
 import Joi from "joi";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
 
 import { JwtProperty } from "../types/JwtProperty";
 import { DecodedJwtPayload } from "../types/DecodedJwtPayload";
 import User, { UserDocument } from "../models/User";
 import { UserData } from "../types/UserData";
 import { RoleData } from "../types/RoleData";
+import { OrderListData } from "../types/OrderData";
 
 const saltRounds = 10;
 const secret = crypto.randomBytes(32).toString("hex");
+
+interface PayloadWithOptionalStore {
+  userId: string;
+  userRole: string;
+  isUserBanned: boolean;
+  currentOrderList: string | Types.ObjectId | OrderListData;
+  store?: string;
+}
 
 export async function hashPassword(password: string): Promise<string> {
   try {
@@ -69,18 +79,19 @@ export async function comparePasswords(
 }
 
 export function generateAuthToken(user: UserData): string {
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      userRole: user.role,
-      isUserBanned: user.banned,
-      currentOrderList: user.orderHistory[user.orderHistory.length - 1],
-    },
-    secret,
-    {
-      expiresIn: "24h",
-    }
-  );
+  let payload: PayloadWithOptionalStore = {
+    userId: user.id,
+    userRole: user.role,
+    isUserBanned: user.banned,
+    currentOrderList: user.orderHistory[user.orderHistory.length - 1],
+  };
+
+  if (user.store) {
+    payload.store = user.store;
+  }
+  const token = jwt.sign(payload, secret, {
+    expiresIn: "24h",
+  });
   return token;
 }
 
@@ -153,5 +164,10 @@ export function sanitizeUserData(
     banned: user.banned,
     orderHistory: user.orderHistory,
   };
+
+  if (user.store) {
+    sanitizedUser.store = user.store;
+  }
+
   return sanitizedUser;
 }
