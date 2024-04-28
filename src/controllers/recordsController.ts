@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 
 import recordsServices from "../services/recordsService";
-import { parseRecordsQueryParams } from "../utils/recordsUtils";
+import {
+  parseRecordsQueryParams,
+  validateRecordBody,
+} from "../utils/recordsUtils";
+import { validateStockItemBody } from "../utils/stockItemsUtils";
 
 export async function getAllRecordsHandler(req: Request, res: Response) {
   try {
@@ -49,4 +53,30 @@ export async function getGenresHandler(req: Request, res: Response) {
   // todo error handling for getGenresHandler
   const genres = await recordsServices.getGenres();
   res.send(genres);
+}
+
+export async function createRecordWithStockHandler(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { condition, price, store } = req.body;
+    const stockItem = { condition, price, store };
+    validateRecordBody(req);
+    validateStockItemBody(stockItem);
+
+    const newRecord = await recordsServices.createRecordWithStockItem(req.body);
+
+    res.status(201).json({
+      data: newRecord,
+      message: "Record created successfully",
+      status: "success",
+    });
+  } catch (error) {
+    console.error("Error creating record:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      status: "error",
+    });
+  }
 }

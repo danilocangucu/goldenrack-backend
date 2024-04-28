@@ -456,3 +456,37 @@ async function fetchStockItemsWithCondition() {
     console.error(err);
   }
 }
+
+export function validateRecordBody(req: Request): void {
+  if (
+    !req.body.title ||
+    !req.body.artist ||
+    !req.body.genre ||
+    !req.body.year ||
+    !req.body.description
+  ) {
+    throw new Error(
+      "Missing required fields: title, artist, genre, year, and description"
+    );
+  }
+
+  if (
+    isNaN(parseInt(req.body.year)) ||
+    parseInt(req.body.year) < 1900 ||
+    parseInt(req.body.year) > new Date().getFullYear()
+  ) {
+    throw new Error("Invalid year provided");
+  }
+
+  console.log("year parsed");
+
+  if (req.body.description.length < 10 || req.body.description.length > 500) {
+    throw new Error(
+      "Invalid description: must be between 10 and 500 characters"
+    );
+  }
+
+  if (!req.body.genre.match(/^[0-9a-fA-F]{24}$/)) {
+    throw new Error("Invalid genre identifier");
+  }
+}

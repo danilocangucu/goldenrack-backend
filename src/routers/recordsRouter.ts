@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  createRecordWithStockHandler,
   getAllRecordsHandler,
   getGenresHandler,
   getRecordByIdHandler,
@@ -13,5 +14,6 @@ router.use("/conditions", conditionsRouter);
 router.get("/", getAllRecordsHandler);
 router.get("/genres", getGenresHandler);
 router.get("/:id", getRecordByIdHandler);
+router.post("/", createRecordWithStockHandler);
 
 export default router;
