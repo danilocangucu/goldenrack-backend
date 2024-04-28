@@ -64,12 +64,15 @@ async function createStockItem(
     });
 
     foundStock.stockItems.push({ stockItem: newStockItem._id });
+    await foundStock.save();
+
     const foundRecordInStore = foundStore.recordsInStock.find(
       (record: any) => record.record.toString() === recordId
     );
     if (!foundRecordInStore) {
       throw new Error("Record was not found in store");
     }
+    foundRecordInStore.stockItems.push(newStockItem._id);
     foundStore.save();
 
     const createdStockItem = await newStockItem.save();
@@ -82,7 +85,59 @@ async function createStockItem(
   }
 }
 
+async function deleteStockItem(
+  stockItemId: string,
+  storeId: string,
+  recordId: string
+): Promise<boolean> {
+  const foundStore = await Store.findById(storeId);
+
+  if (!foundStore) {
+    return false;
+  }
+
+  const foundRecord = await Record.findById(recordId);
+  if (!foundRecord) {
+    return false;
+  }
+
+  const recordIndex = foundStore.recordsInStock.findIndex(
+    (recordAndStock) => recordAndStock.record.toString() === recordId
+  );
+
+  if (recordIndex === -1) {
+    console.error("Record not found in store");
+    return false;
+  }
+
+  const stockItems = foundStore?.recordsInStock[recordIndex!].stockItems.filter(
+    (stockItemIdInRecord: any) => stockItemIdInRecord.toString() !== stockItemId
+  );
+
+  const stockItemsFiltered = stockItems || [];
+  foundStore.recordsInStock[recordIndex!].stockItems = stockItemsFiltered;
+
+  await foundStore.save();
+
+  const foundStock = await Stock.findById(foundRecord.stock);
+  if (!foundStock) {
+    return false;
+  }
+
+  const filteredStock = foundStock.stockItems.filter(
+    (stockItem: any) => stockItem.stockItem.toString() !== stockItemId
+  );
+
+  foundStock.stockItems = filteredStock;
+  await foundStock.save();
+
+  const result = await StockItem.findByIdAndDelete(stockItemId);
+
+  return result != null;
+}
+
 export default {
   updateStockItem,
   createStockItem,
+  deleteStockItem,
 };

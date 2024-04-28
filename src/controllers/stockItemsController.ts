@@ -49,3 +49,33 @@ export async function createStockItemHandler(req: Request, res: Response) {
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 }
+
+export async function deleteStockItemHandler(req: Request, res: Response) {
+  try {
+    const { stockItemId } = req.params;
+    const { recordId, storeId } = req.body;
+    if (!recordId || !storeId) {
+      throw new Error("Record id and store id are required");
+    }
+
+    const deletionResult = await stockItemsService.deleteStockItem(
+      stockItemId,
+      storeId,
+      recordId
+    );
+    if (deletionResult) {
+      res.status(200).json({
+        status: "success",
+        message: "Stock Item deleted successfully",
+      });
+    } else {
+      res.status(404).json({
+        status: "error",
+        message: "Stock Item not found",
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting stock item:", error);
+    res.status(500).json({ status: "error", message: "Internal server error" });
+  }
+}
