@@ -27,6 +27,26 @@ async function updateStockItem(
   }
 }
 
+async function createStockItem(
+  storeId: string,
+  conditionId: string,
+  price: number
+) {
+  try {
+    const newStockItem = new StockItem({
+      store: storeId,
+      condition: conditionId,
+      price,
+    });
+
+    const createdStockItem = await newStockItem.save();
+    return createdStockItem;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export default {
   updateStockItem,
+  createStockItem,
 };
