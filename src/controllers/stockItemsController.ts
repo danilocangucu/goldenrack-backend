@@ -29,11 +29,12 @@ export async function updateStockItemHandler(req: Request, res: Response) {
 export async function createStockItemHandler(req: Request, res: Response) {
   try {
     // TODO next 4 lines can be refactored into a function "convertBodyToStockItem"
-    const { storeId, conditionId, price } = req.body;
+    const { recordId, storeId, conditionId, price } = req.body;
     if (!storeId || !conditionId || !price) {
       throw new Error("Store id, condition id and price are required");
     }
     const createdStockItem = await stockItemsService.createStockItem(
+      recordId,
       storeId,
       conditionId,
       price
