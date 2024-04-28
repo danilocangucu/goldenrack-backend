@@ -7,3 +7,6 @@ package-lock.json
 package.json
 coverage
 .DS_Store
+src/certs/ca_bundle.crt
+src/certs/certificate.crt
+src/certs/private.key

@@ -33,6 +33,11 @@ async function createStockItem(
   price: number
 ) {
   try {
+    const foundCondition = await Condition.findById(conditionId);
+    if (!foundCondition) {
+      throw new Error("Condition not found");
+    }
+
     const newStockItem = new StockItem({
       store: storeId,
       condition: conditionId,
@@ -40,7 +45,10 @@ async function createStockItem(
     });
 
     const createdStockItem = await newStockItem.save();
-    return createdStockItem;
+    const plainCreatedStockItem = createdStockItem.toObject();
+    const plainFoundCondition = foundCondition.toObject();
+
+    return { ...plainCreatedStockItem, condition: plainFoundCondition };
   } catch (error) {
     throw error;
   }

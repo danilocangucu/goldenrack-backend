@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import app from "./app";
+import https from "https";
+import fs from "fs";
 
 import { OrderDocument, OrderSchema } from "./models/Order";
 import { GenreDocument, GenreSchema } from "./models/Genre";
@@ -15,9 +17,16 @@ mongoose
     dbName: "goldenrack",
   })
   .then(() => {
-    app.listen(port, () => {
+    const httpsOptions = {
+      key: fs.readFileSync("./dist/src/certs/private.key"),
+      cert: fs.readFileSync("./src/certs/certificate.crt"),
+      ca: fs.readFileSync("./src/certs/ca_bundle.crt"),
+    };
+    const httpServer = https.createServer(httpsOptions, app);
+
+    httpServer.listen(port, () => {
       console.log("Database goldenrack is connected");
-      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`HTTPS Server is running on https://localhost:${port}`);
     });
   })
   .catch((error: Error) => {
