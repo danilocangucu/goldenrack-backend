@@ -1,6 +1,6 @@
-# Vintage Cars API
+# Golden Rack BACKEND
 
-Welcome to the Vintage Cars API project! This API was built by [Danilo Canguçu](https://github.com/danilocangucu), [Theo Adejumo](https://github.com/tkeys) and [Francis Eboyie](https://github.com/Eboyie) as part of Integrify's 2024 Node.js cohort. The project provides a platform for managing a collection of vintage cars, including operations for creating, retrieving, updating, and deleting car records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for vintage car enthusiasts and collectors.
+Welcome to the Golden Rack's backend! This API was built by [Danilo Canguçu](https://github.com/danilocangucu) as part of Integrify's 2024 Node.js cohort. The project provides a platform for buying/selling vinyl records a collection of vintage cars, including, among others, operations for creating, retrieving, updating, and deleting records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for [golden ears](https://en.wikipedia.org/wiki/Golden_ear).
 
 ## Getting Started
 
@@ -19,8 +19,8 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository to your local machine:
 
    ```sh
-   git clone https://github.com/danilocangucu/vintage-cars.git
-   cd vintage-cars
+   git clone https://github.com/danilocangucu/golden-rack-backend.git
+   cd golden-rack-backend
    ```
 
 2. Install the required packages:
@@ -37,7 +37,7 @@ Before you begin, ensure you have the following installed:
 
 4. Set up your environment variables:
 
-   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. Contact one of the group members to have the variables values.
+   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. [Contact me](malito:daniloccangucu@gmail.com) to have the variables values.
 
 5. Start the application:
 
@@ -59,7 +59,8 @@ npm run test
 ```
 
 ## Entity Relationship Diagram
-![Vintage Cars ERD](https://i.postimg.cc/gj7hF9Zc/ERD-diagram-for-Vintage-Car-1.png)
+![Golden Rack ERD](https://i.postimg.cc/1PqZSN9J/goldenrack-erd-v2.png)
+*The diagram was created with [databasediagram.com](https://databasediagram.com/).*
 
 ## API Endpoints
 
