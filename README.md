@@ -296,25 +296,42 @@ Base URL: `/api/v1/users`
        {
           "data": [
               {
-                  "_id": "65f80afc70ee734ea399ae04",
-                  "role": "Admin",
-                  "email": "jane.smith@example.com",
-                  "hashedPassword": "$2b$10$3PxzUyL9.vmwtWGzJZux6.UjLmV7HNc93Eb1WZt9FtspVI2kel16O",
-                  "userName": "janesmith",
-                  "firstName": "Jane",
-                  "lastName": "Smith",
+                  "_id": "6621163e2fd839c8f19db9bc",
+                  ...
+                  "userName": "danilodanilo",
+                  "firstName": "DANILO",
+                  "lastName": "COSTA CANGUCU",
+                  "role": "Customer",
                   "banned": false,
                   "orderHistory": [
-                      "65fd921ff855b31d09bda502"
+                      "6621163e2fd839c8f19db9ba",
+                      ...
+                      "6630d0826390a5a6de900f6b"
                   ],
-                  "__v": 1
-             },
-          ...
-          ]
+              },
+              {
+                  "_id": "662b847e64a5cdceab70ecb6",
+                  ...
+                  "userName": "paratiisi",
+                  "firstName": "Petri",
+                  "lastName": "Kaulonen",
+                  "role": "Store",
+                  "banned": false,
+                  "orderHistory": [
+                      "662b847e64a5cdceab70ecb4"
+                  ],
+                  "__v": 0,
+                  "store": "65f9db69025a97b0d4b8e171"
+              },
+             ...
+          ],
+          "message": "users retrieved successfully",
+          "status": "success"
        }
        ```
 
   - **GET /:userId**: Retrieve a single user by its ID.
+        
   - **PUT /:userId**: Update a user record by its ID. Requires an authorization token from either an admin or the user themselves.
   - **DELETE /:userId**: Delete a user record by its ID. Requires an authorization token from either an admin or the user themselves.
   - **GET /:userId/recover-password**: Request password recovery for the user. Requires authorization from the user themselves.
