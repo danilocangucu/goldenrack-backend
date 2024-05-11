@@ -1,6 +1,6 @@
 # Golden Rack BACKEND
 
-Welcome to the Golden Rack's backend! This API was built by [Danilo Canguçu](https://github.com/danilocangucu) as part of Integrify's 2024 Node.js cohort. The project provides a platform for buying/selling vinyl records a collection of vintage cars, including, among others, operations for creating, retrieving, updating, and deleting records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for [golden ears](https://en.wikipedia.org/wiki/Golden_ear).
+Welcome to the Golden Rack's backend! This API was built by [Danilo Canguçu](https://github.com/danilocangucu) as part of Integrify's 2024 Node.js cohort. The project provides a platform for buying/selling vinyls from record stores, including, among others, operations for creating, retrieving, updating, and deleting records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for [golden ears](https://en.wikipedia.org/wiki/Golden_ear).
 
 ## Getting Started
 
@@ -37,7 +37,7 @@ Before you begin, ensure you have the following installed:
 
 4. Set up your environment variables:
 
-   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. [Contact me](malito:daniloccangucu@gmail.com) to have the variables values.
+   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. [Contact me](malito:daniloccangucu@gmail.com) to have these variables values.
 
 5. Start the application:
 
@@ -146,48 +146,142 @@ Base URL: `/api/v1/auth`
     }
     ```
 
-### Cars API Endpoints
-Base URL: `/api/v1/cars`
+### Records API Endpoints
+Base URL: `/api/v1/records`
 
-- **GET /**: Retrieve all cars.
-- **POST /**: Create a new car record. Requires an authorization token from an admin.
+- **GET /**: Retrieve all records.
+- **POST /**: Create a new record. Requires an authorization token from an admin or a store.
   - Request Body:
     ```json
     {
-       "brand": "65fc287d47b3c87edcd0f21a",
-       "model": "Mercedes",
-       "conditions": [
-           "65f80bce70ee734ea399ae07"
-       ],
-       "description": "German Luxury car known for its excellence and style.",
-       "year": 2020,
-       "price": 970000,
-       "__v": 0
+      "title": "Back in Black",
+      "artist": "AC/DC",
+      "genre": "5e1a8b9c9b1d9ad471bc9c24",
+      "year": 1980,
+      "description": "The seventh studio album by AC/DC, known for its hard-hitting rock anthems and iconic guitar riffs.",
+      "condition": "65f80bd670ee734ea399ae13",
+      "price": 55,
+      "store": "65f9db69025a97b0d4b8e171"
     }
     ```
   - Response:
     ```json
     {
-       "data": {
-           "brand": "65fc287d47b3c87edcd0f21a",
-           "model": "Mercedes",
-           "conditions": [
-               "65f80bce70ee734ea399ae07"
-           ],
-           "description": "German Luxury car known for its excellence and style.",
-           "year": 2020,
-           "price": 970000,
-           "_id": "660f9b42d408a4efb4044008",
-           "__v": 0
-       },
-       "message": "car created successfully",
-       "status": "success"
+    "message": "Record created successfully",
+    "status": "success"
     }
     ```
     
-- **GET /:id**: Retrieve a single car by its ID.
-- **PUT /:id**: Update a car record by its ID. Requires an authorization token from an admin.
-- **DELETE /:id**: Delete a car record by its ID. Requires an authorization token from an admin.
+- **GET /:id**: Retrieve a single record by its ID.
+   - Request Parameter: ```662ea63f5c29c0fa4fdb3f17```
+   - Response:
+     ```json
+     [
+       {
+           "_id": "662ea63f5c29c0fa4fdb3f17",
+           "genre": {
+               "_id": "66155311c88445b733cfdb7b",
+               "name": "Progressive Rock"
+           },
+           "title": "The Wall",
+           "artist": "Pink Floyd",
+           "description": "The eleventh studio album by Pink Floyd, a rock opera that explores themes of isolation, abandonment, and personal identity.",
+           "year": 1979,
+           "stock": {
+               "_id": "662ea63f5c29c0fa4fdb3f18",
+               "stockItems": [
+                   {
+                       "_id": "662ea63f5c29c0fa4fdb3f29",
+                       "condition": {
+                           "_id": "65f80bd670ee734ea399ae09",
+                           "condition": "Very Good"
+                       },
+                       "store": {
+                           "_id": "65f9db69025a97b0d4b8e171",
+                           "name": "Vinyyli Paratiisi",
+                           ...
+                           "shippingInfo": {
+                               "_id": "65f9dbcc025a97b0d4b8e172",
+                               "domestic": {
+                                   "standard": "Standard shipping: €5.00 (3-5 business days)",
+                                   "express": "Express shipping: €10.00 (1-2 business days)"
+                               },
+                               "international": {
+                                   "economy": "International Economy: €15.00 (7-14 business days)",
+                                   "express": "International Express: €25.00 (3-5 business days)"
+                               }
+                           },
+                           "recordsInStock": [
+                               {
+                                   "record": "65f9d2d1025a97b0d4b8e173",
+                                   "stockItems": [
+                                       "66275cd5fbc2f496c6687053",
+                                       "662eba793cf8c38382a27e1b",
+                                       "662f21d2d5bbe13ff1a026d6"
+                                   ]
+                               },
+                               ...
+                           ],
+                       },
+                       "price": 30,
+                   }
+               ],
+           },
+       }
+     ]
+     ```
+    
+- **GET /genres**: Retrieve all records genres.
+   - Response:
+   ```json
+   [
+       {
+           "_id": "661552e7c88445b733cfdb79",
+           "name": "Pop"
+       },
+       {
+           "_id": "6615530cc88445b733cfdb7a",
+           "name": "Rock"
+       },
+       {
+           "_id": "66155311c88445b733cfdb7b",
+           "name": "Progressive Rock"
+       }
+       ,
+       ...
+   ]
+   ```
+- **GET /conditions**: Retrieve all records conditions.
+   - Response:
+   ```json
+   {
+       "data": [
+           {
+               "_id": "65f80bd270ee734ea399ae08",
+               "condition": "New"
+           },
+           {
+               "_id": "65f80bce70ee734ea399ae07",
+               "condition": "Like New"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae09",
+               "condition": "Very Good"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae10",
+               "condition": "Good"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae13",
+               "condition": "Fair"
+           },
+           ... 
+       ],
+       "status": "success",
+       "message": "Conditions fetched with success"
+   }
+   ```
 
 ### Users API Endpoints
 Base URL: `/api/v1/users`
