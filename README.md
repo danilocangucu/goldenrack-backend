@@ -167,8 +167,8 @@ Base URL: `/api/v1/records`
   - Response:
     ```json
     {
-    "message": "Record created successfully",
-    "status": "success"
+       "message": "Record created successfully",
+       "status": "success"
     }
     ```
     
