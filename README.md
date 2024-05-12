@@ -69,10 +69,11 @@ The API can also be accessed in an AWS EC2 instance at http://13.49.67.88:5000 a
 ### Authorization API Endpoints
 Base URL: `/api/v1/auth`
 
-#### Register User
-- **POST /register**: Create a new user account.
-  - Request Body:
-    ```json
+<details>
+  <summary><b>POST /register: Create a new user account.</b></summary>
+
+  ##### Request Body:
+  ```json
     {
         "email": "johndoe@example.com",
         "userName": "johndoe",
@@ -80,54 +81,56 @@ Base URL: `/api/v1/auth`
         "firstName": "John",
         "lastName": "Doe"
     }
-    ```
-  - Response:
-    ```json
-    {
-        "status": "success",
-        "message": "User registered successfully.",
-        "data": {
-            "id": "660ea0515b16fa19fef1f238",
-            "email": "johndoe@example.com",
-            "userName": "johndoe",
-            "firstName": "John",
-            "lastName": "Doe",
-            "role": "Customer",
-            "banned": false,
-            "orderHistory": [
-                "660ea0515b16fa19fef1f236"
-            ]
-        },
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjBlYTA1MTViMTZmYTE5ZmVmMWYyMzgiLCJ1c2VyUm9sZSI6IkN1c3RvbWVyIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjM0NTc3LCJleHAiOjE3MTIzMjA5Nzd9.MsRiKUZAR94DRZbiOk91kBkleG_tuY-0kNGI3jlcTe4"
-    }
-    ```
+  ```
 
-#### Login User
-- **POST /login**: Authenticate a user and obtain an authorization token.
-  - Request Body:
-    ```json
-    {
-        "email": "johndoe@example.com",
-        "password": "test123"
-    }
-    ```
-  - Response:
-    ```json
-    {
-        "status": "success",
-        "message": "Login successful",
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MDksImV4cCI6MTcxMjMyMTAwOX0.L3ufDNdVoGhhAFdpsp26JqoD73lGBJctI_hsrBB6_KI"
-    }
-    ```
+  ##### Response:
+  ```json
+       {
+           "status": "success",
+           "message": "User registered successfully.",
+           "data": {
+               "id": "660ea0515b16fa19fef1f238",
+               "email": "johndoe@example.com",
+               "userName": "johndoe",
+               "firstName": "John",
+               "lastName": "Doe",
+               "role": "Customer",
+               "banned": false,
+               "orderHistory": [
+                   "660ea0515b16fa19fef1f236"
+               ]
+           },
+           "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjBlYTA1MTViMTZmYTE5ZmVmMWYyMzgiLCJ1c2VyUm9sZSI6IkN1c3RvbWVyIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjM0NTc3LCJleHAiOjE3MTIzMjA5Nzd9.MsRiKUZAR94DRZbiOk91kBkleG_tuY-0kNGI3jlcTe4"
+       }
+  ``` 
+</details>
+<details>
+  <summary><b>POST /login: Authenticate a user and obtain an authorization token.</b></summary>
 
-#### Verify Token
-- **POST /verify**: Verify the authenticity of an authorization token.
-  - Request Header:
-    ```
+  ##### Request Body:
+  ```json
+  {
+      "email": "johndoe@example.com",
+      "password": "test123"
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
+       "status": "success",
+       "message": "Login successful",
+       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MDksImV4cCI6MTcxMjMyMTAwOX0.L3ufDNdVoGhhAFdpsp26JqoD73lGBJctI_hsrBB6_KI"
+   }
+  ```
+</details>
+<details>
+  <summary><b>POST /verify: Verify the authenticity of an authorization token.</b></summary>
+
+  ##### Request Header:
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MzMsImV4cCI6MTcxMjMyMTAzM30.wh1tCsCFhYuU_Ai0oAaosee7-nH2vwbpHTUdvJgT7Jw
-    ```
-  - Response:
-    ```json
+
+  ##### Response:
     {
         "status": "success",
         "message": "Token is valid",
@@ -144,16 +147,66 @@ Base URL: `/api/v1/auth`
             ]
         }
     }
-    ```
+</details>
 
 ### Records API Endpoints
 Base URL: `/api/v1/records`
 
-- **GET /**: Retrieve all records.
-- **POST /**: Create a new record. Requires an authorization token from an admin or a store.
-  - Request Body:
-    ```json
+<details>
+  <summary><b>GET /: Retrieve all records.</b></summary>
+   
+  ##### Response:
+   ```json
     {
+       "data": {
+           "records": [
+               {
+                   "_id": "662e94813b45f93d0af7d206",
+                   "genre": ... ,
+                   "title": "Abbey Road",
+                   "artist": "The Beatles",
+                   "description": "The eleventh studio album by the English rock band the Beatles, noted for its excellent production and rich songwriting.",
+                   "year": 1969,
+                   "stock": {
+                       "_id": "662e94813b45f93d0af7d207",
+                       "stockItems": [
+                           {
+                               "_id": "662e9803a30682e3974d1c08",
+                               "condition": ... ,
+                               "store": {
+                                   "_id": "65f9db69025a97b0d4b8e171",
+                                   "name": "Vinyyli Paratiisi",
+                                   ...
+                               },
+                               "price": 15,
+                           },
+                           ...
+                       ]
+                   }
+               },
+               {
+                   "_id": "662e97d2a30682e3974d1b5d",
+                   "genre": ... ,
+                   "title": "Back in Black",
+                   "artist": "AC/DC",
+                   "description": "The seventh studio album by AC/DC, known for its hard-hitting rock anthems and iconic guitar riffs.",
+                   "year": 1980,
+                   "stock": ...
+               }
+           ],
+           "totalPages": 3
+       },
+       "message": "Records retrieved successfully",
+       "status": "success"
+    }
+   ```
+</details>
+<details>
+  <summary><b>POST /: Create a new record. Requires an authorization token from an admin or a store.</b></summary>
+
+  ##### Request Body:
+  ```json
+  {
       "title": "Back in Black",
       "artist": "AC/DC",
       "genre": "5e1a8b9c9b1d9ad471bc9c24",
@@ -162,77 +215,86 @@ Base URL: `/api/v1/records`
       "condition": "65f80bd670ee734ea399ae13",
       "price": 55,
       "store": "65f9db69025a97b0d4b8e171"
-    }
-    ```
-  - Response:
-    ```json
-    {
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
        "message": "Record created successfully",
        "status": "success"
+   }
+  ```
+</details>
+<details>
+  <summary><b>GET /:recordId: Retrieve a single record by its ID</b></summary>
+
+  ##### Request Parameter:
+  ```
+  662ea63f5c29c0fa4fdb3f17
+  ```
+
+  ##### Response:
+   ```json
+  [
+    {
+        "_id": "662ea63f5c29c0fa4fdb3f17",
+        "genre": {
+            "_id": "66155311c88445b733cfdb7b",
+            "name": "Progressive Rock"
+        },
+        "title": "The Wall",
+        "artist": "Pink Floyd",
+        "description": "The eleventh studio album by Pink Floyd, a rock opera that explores themes of isolation, abandonment, and personal identity.",
+        "year": 1979,
+        "stock": {
+            "_id": "662ea63f5c29c0fa4fdb3f18",
+            "stockItems": [
+                {
+                    "_id": "662ea63f5c29c0fa4fdb3f29",
+                    "condition": {
+                        "_id": "65f80bd670ee734ea399ae09",
+                        "condition": "Very Good"
+                    },
+                    "store": {
+                        "_id": "65f9db69025a97b0d4b8e171",
+                        "name": "Vinyyli Paratiisi",
+                        ...
+                        "shippingInfo": {
+                            "_id": "65f9dbcc025a97b0d4b8e172",
+                            "domestic": {
+                                "standard": "Standard shipping: €5.00 (3-5 business days)",
+                                "express": "Express shipping: €10.00 (1-2 business days)"
+                            },
+                            "international": {
+                                "economy": "International Economy: €15.00 (7-14 business days)",
+                                "express": "International Express: €25.00 (3-5 business days)"
+                            }
+                        },
+                        "recordsInStock": [
+                            {
+                                "record": "65f9d2d1025a97b0d4b8e173",
+                                "stockItems": [
+                                    "66275cd5fbc2f496c6687053",
+                                    "662eba793cf8c38382a27e1b",
+                                    "662f21d2d5bbe13ff1a026d6"
+                                ]
+                            },
+                            ...
+                        ],
+                    },
+                    "price": 30,
+                }
+            ],
+        },
     }
-    ```
-    
-- **GET /:id**: Retrieve a single record by its ID.
-   - Request Parameter: ```662ea63f5c29c0fa4fdb3f17```
-   - Response:
-     ```json
-     [
-       {
-           "_id": "662ea63f5c29c0fa4fdb3f17",
-           "genre": {
-               "_id": "66155311c88445b733cfdb7b",
-               "name": "Progressive Rock"
-           },
-           "title": "The Wall",
-           "artist": "Pink Floyd",
-           "description": "The eleventh studio album by Pink Floyd, a rock opera that explores themes of isolation, abandonment, and personal identity.",
-           "year": 1979,
-           "stock": {
-               "_id": "662ea63f5c29c0fa4fdb3f18",
-               "stockItems": [
-                   {
-                       "_id": "662ea63f5c29c0fa4fdb3f29",
-                       "condition": {
-                           "_id": "65f80bd670ee734ea399ae09",
-                           "condition": "Very Good"
-                       },
-                       "store": {
-                           "_id": "65f9db69025a97b0d4b8e171",
-                           "name": "Vinyyli Paratiisi",
-                           ...
-                           "shippingInfo": {
-                               "_id": "65f9dbcc025a97b0d4b8e172",
-                               "domestic": {
-                                   "standard": "Standard shipping: €5.00 (3-5 business days)",
-                                   "express": "Express shipping: €10.00 (1-2 business days)"
-                               },
-                               "international": {
-                                   "economy": "International Economy: €15.00 (7-14 business days)",
-                                   "express": "International Express: €25.00 (3-5 business days)"
-                               }
-                           },
-                           "recordsInStock": [
-                               {
-                                   "record": "65f9d2d1025a97b0d4b8e173",
-                                   "stockItems": [
-                                       "66275cd5fbc2f496c6687053",
-                                       "662eba793cf8c38382a27e1b",
-                                       "662f21d2d5bbe13ff1a026d6"
-                                   ]
-                               },
-                               ...
-                           ],
-                       },
-                       "price": 30,
-                   }
-               ],
-           },
-       }
-     ]
-     ```
-    
-- **GET /genres**: Retrieve all records genres.
-   - Response:
+  ]
+  ```
+</details>
+<details>
+  <summary><b>GET /genres: Retrieve all records genres.</b></summary>
+
+  ##### Response:
    ```json
    [
        {
@@ -251,8 +313,12 @@ Base URL: `/api/v1/records`
        ...
    ]
    ```
-- **GET /conditions**: Retrieve all records conditions.
-   - Response:
+
+</details>
+<details>
+  <summary><b>GET /conditions: Retrieve all records conditions.</b></summary>
+
+  ##### Response:
    ```json
    {
        "data": [
@@ -283,16 +349,22 @@ Base URL: `/api/v1/records`
    }
    ```
 
+</details>
+
 ### Users API Endpoints
 Base URL: `/api/v1/users`
 
-  - **GET /**: Retrieve all users. Requires an authorization token from an admin.
-    - Request Header:
-    ```
+<details>
+  <summary><b>GET /: Retrieve all users. Requires an authorization token from an admin.</b></summary>
+
+  ##### Request Header:
+  
+   ```
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjk4Mzc0LCJleHAiOjE3MTIzODQ3NzR9.bMKZF-ItcS_og2sTWoxQr7paTWQVRf8_YFfRbtBgJYo
-    ``` 
-     - Response:
-       ```json
+   ``` 
+
+  ##### Response:
+  ```json
        {
           "data": [
               {
@@ -320,7 +392,6 @@ Base URL: `/api/v1/users`
                   "orderHistory": [
                       "662b847e64a5cdceab70ecb4"
                   ],
-                  "__v": 0,
                   "store": "65f9db69025a97b0d4b8e171"
               },
              ...
@@ -328,9 +399,26 @@ Base URL: `/api/v1/users`
           "message": "users retrieved successfully",
           "status": "success"
        }
-       ```
+  ```
 
-  - **GET /:userId**: Retrieve a single user by its ID.
+</details>
+<details>
+  <summary><b>METHOD /path: Description.</b></summary>
+
+  ##### Request Body:
+  ```json
+  {
+      
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
+       
+   }
+  ```
+</details>
         
   - **PUT /:userId**: Update a user record by its ID. Requires an authorization token from either an admin or the user themselves.
   - **DELETE /:userId**: Delete a user record by its ID. Requires an authorization token from either an admin or the user themselves.
