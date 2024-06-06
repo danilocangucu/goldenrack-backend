@@ -10,10 +10,11 @@ import conditionsRouter from "./conditionsRouter";
 
 const router = express.Router();
 
-router.use("/conditions", conditionsRouter);
-router.get("/", getAllRecordsHandler);
 router.get("/genres", getGenresHandler);
-router.get("/:id", getRecordByIdHandler);
+router.use("/conditions", conditionsRouter);
+
+router.get("/", getAllRecordsHandler);
 router.post("/", createRecordWithStockHandler);
+router.get("/:id", getRecordByIdHandler);
 
 export default router;

@@ -30,9 +30,10 @@ usersRouter.post(
   changePasswordHandler
 );
 usersRouter.patch("/:userId/ban", isAdmin, banUserHandler);
-usersRouter.get("/", getAllUsers, isAdmin);
+usersRouter.get("/", isAdmin, getAllUsers);
 usersRouter.delete("/:userId", hasPermission, deleteUser);
-usersRouter.get("/:userId", hasPermission, getUserByIdHandler);
+// usersRouter.get("/:userId", hasPermission, getUserByIdHandler);
+usersRouter.get("/:userId", getUserByIdHandler);
 usersRouter.put("/:userId", hasPermission, updateUser);
 
 export default usersRouter;

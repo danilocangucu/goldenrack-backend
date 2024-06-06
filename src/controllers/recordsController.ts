@@ -49,7 +49,7 @@ export async function getRecordByIdHandler(req: Request, res: Response) {
   }
 }
 
-export async function getGenresHandler(req: Request, res: Response) {
+export async function getGenresHandler(_req: Request, res: Response) {
   // todo error handling for getGenresHandler
   const genres = await recordsServices.getGenres();
   res.send(genres);
