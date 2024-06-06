@@ -72,6 +72,7 @@ const createRecordWithStockItem = async ({
 
   const newRecord = await createRecord(record);
   const addedRecordId = await addRecordToStore(newRecord, stockItem.store);
+  // TODO newStockItem is not used
   const newStockItem = await stockItemsService.createStockItem(
     addedRecordId,
     stockItem.store,

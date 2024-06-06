@@ -73,6 +73,7 @@ export async function banUserHandler(req: Request, res: Response) {
 
 export async function getAllUsers(_: Request, response: Response) {
   try {
+    // TODO sanitize userList
     const userList = await userService.getAllUsers();
     response.status(200).json({
       data: userList,

@@ -15,6 +15,7 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+// TODO verify middlewares for admin+store owner check
 app.use(`${baseUrl}/records`, recordsRouter);
 app.use(`${baseUrl}/auth`, authRouter);
 app.use(`${baseUrl}/users`, usersRouter);
