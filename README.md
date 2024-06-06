@@ -1,6 +1,6 @@
-# Vintage Cars API
+# Golden Rack BACKEND
 
-Welcome to the Vintage Cars API project! This API was built by [Danilo Canguçu](https://github.com/danilocangucu), [Theo Adejumo](https://github.com/tkeys) and [Francis Eboyie](https://github.com/Eboyie) as part of Integrify's 2024 Node.js cohort. The project provides a platform for managing a collection of vintage cars, including operations for creating, retrieving, updating, and deleting car records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for vintage car enthusiasts and collectors.
+Welcome to the Golden Rack's backend! This API was built by [Danilo Canguçu](https://github.com/danilocangucu) as part of Integrify's 2024 Node.js cohort. The project provides a platform for buying/selling vinyls from record stores, including, among others, operations for creating, retrieving, updating, and deleting records. It's mainly built using TypeScript Express.js and MongoDB – [see full technologies, in Built With section](#built-with) – offering a robust backend solution for [golden ears](https://en.wikipedia.org/wiki/Golden_ear).
 
 ## Getting Started
 
@@ -19,8 +19,8 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository to your local machine:
 
    ```sh
-   git clone https://github.com/danilocangucu/vintage-cars.git
-   cd vintage-cars
+   git clone https://github.com/danilocangucu/golden-rack-backend.git
+   cd golden-rack-backend
    ```
 
 2. Install the required packages:
@@ -37,7 +37,7 @@ Before you begin, ensure you have the following installed:
 
 4. Set up your environment variables:
 
-   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. Contact one of the group members to have the variables values.
+   - Create a new file named `.env` and include the variables MONGODB_URL and PORT. [Contact me](malito:daniloccangucu@gmail.com) to have these variables values.
 
 5. Start the application:
 
@@ -59,7 +59,8 @@ npm run test
 ```
 
 ## Entity Relationship Diagram
-![Vintage Cars ERD](https://i.postimg.cc/gj7hF9Zc/ERD-diagram-for-Vintage-Car-1.png)
+![Golden Rack ERD](https://i.postimg.cc/1PqZSN9J/goldenrack-erd-v2.png)
+*The diagram was created with [databasediagram.com](https://databasediagram.com/).*
 
 ## API Endpoints
 
@@ -68,10 +69,11 @@ The API can also be accessed in an AWS EC2 instance at http://13.49.67.88:5000 a
 ### Authorization API Endpoints
 Base URL: `/api/v1/auth`
 
-#### Register User
-- **POST /register**: Create a new user account.
-  - Request Body:
-    ```json
+<details>
+  <summary><b>POST /register: Create a new user account.</b></summary>
+
+  ##### Request Body:
+  ```json
     {
         "email": "johndoe@example.com",
         "userName": "johndoe",
@@ -79,54 +81,56 @@ Base URL: `/api/v1/auth`
         "firstName": "John",
         "lastName": "Doe"
     }
-    ```
-  - Response:
-    ```json
-    {
-        "status": "success",
-        "message": "User registered successfully.",
-        "data": {
-            "id": "660ea0515b16fa19fef1f238",
-            "email": "johndoe@example.com",
-            "userName": "johndoe",
-            "firstName": "John",
-            "lastName": "Doe",
-            "role": "Customer",
-            "banned": false,
-            "orderHistory": [
-                "660ea0515b16fa19fef1f236"
-            ]
-        },
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjBlYTA1MTViMTZmYTE5ZmVmMWYyMzgiLCJ1c2VyUm9sZSI6IkN1c3RvbWVyIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjM0NTc3LCJleHAiOjE3MTIzMjA5Nzd9.MsRiKUZAR94DRZbiOk91kBkleG_tuY-0kNGI3jlcTe4"
-    }
-    ```
+  ```
 
-#### Login User
-- **POST /login**: Authenticate a user and obtain an authorization token.
-  - Request Body:
-    ```json
-    {
-        "email": "johndoe@example.com",
-        "password": "test123"
-    }
-    ```
-  - Response:
-    ```json
-    {
-        "status": "success",
-        "message": "Login successful",
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MDksImV4cCI6MTcxMjMyMTAwOX0.L3ufDNdVoGhhAFdpsp26JqoD73lGBJctI_hsrBB6_KI"
-    }
-    ```
+  ##### Response:
+  ```json
+       {
+           "status": "success",
+           "message": "User registered successfully.",
+           "data": {
+               "id": "660ea0515b16fa19fef1f238",
+               "email": "johndoe@example.com",
+               "userName": "johndoe",
+               "firstName": "John",
+               "lastName": "Doe",
+               "role": "Customer",
+               "banned": false,
+               "orderHistory": [
+                   "660ea0515b16fa19fef1f236"
+               ]
+           },
+           "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjBlYTA1MTViMTZmYTE5ZmVmMWYyMzgiLCJ1c2VyUm9sZSI6IkN1c3RvbWVyIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjM0NTc3LCJleHAiOjE3MTIzMjA5Nzd9.MsRiKUZAR94DRZbiOk91kBkleG_tuY-0kNGI3jlcTe4"
+       }
+  ``` 
+</details>
+<details>
+  <summary><b>POST /login: Authenticate a user and obtain an authorization token.</b></summary>
 
-#### Verify Token
-- **POST /verify**: Verify the authenticity of an authorization token.
-  - Request Header:
-    ```
+  ##### Request Body:
+  ```json
+  {
+      "email": "johndoe@example.com",
+      "password": "test123"
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
+       "status": "success",
+       "message": "Login successful",
+       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MDksImV4cCI6MTcxMjMyMTAwOX0.L3ufDNdVoGhhAFdpsp26JqoD73lGBJctI_hsrBB6_KI"
+   }
+  ```
+</details>
+<details>
+  <summary><b>POST /verify: Verify the authenticity of an authorization token.</b></summary>
+
+  ##### Request Header:
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjp0cnVlLCJpYXQiOjE3MTIyMzQ2MzMsImV4cCI6MTcxMjMyMTAzM30.wh1tCsCFhYuU_Ai0oAaosee7-nH2vwbpHTUdvJgT7Jw
-    ```
-  - Response:
-    ```json
+
+  ##### Response:
     {
         "status": "success",
         "message": "Token is valid",
@@ -143,83 +147,279 @@ Base URL: `/api/v1/auth`
             ]
         }
     }
-    ```
+</details>
 
-### Cars API Endpoints
-Base URL: `/api/v1/cars`
+### Records API Endpoints
+Base URL: `/api/v1/records`
 
-- **GET /**: Retrieve all cars.
-- **POST /**: Create a new car record. Requires an authorization token from an admin.
-  - Request Body:
-    ```json
-    {
-       "brand": "65fc287d47b3c87edcd0f21a",
-       "model": "Mercedes",
-       "conditions": [
-           "65f80bce70ee734ea399ae07"
-       ],
-       "description": "German Luxury car known for its excellence and style.",
-       "year": 2020,
-       "price": 970000,
-       "__v": 0
-    }
-    ```
-  - Response:
-    ```json
+<details>
+  <summary><b>GET /: Retrieve all records.</b></summary>
+   
+  ##### Response:
+   ```json
     {
        "data": {
-           "brand": "65fc287d47b3c87edcd0f21a",
-           "model": "Mercedes",
-           "conditions": [
-               "65f80bce70ee734ea399ae07"
+           "records": [
+               {
+                   "_id": "662e94813b45f93d0af7d206",
+                   "genre": ... ,
+                   "title": "Abbey Road",
+                   "artist": "The Beatles",
+                   "description": "The eleventh studio album by the English rock band the Beatles, noted for its excellent production and rich songwriting.",
+                   "year": 1969,
+                   "stock": {
+                       "_id": "662e94813b45f93d0af7d207",
+                       "stockItems": [
+                           {
+                               "_id": "662e9803a30682e3974d1c08",
+                               "condition": ... ,
+                               "store": {
+                                   "_id": "65f9db69025a97b0d4b8e171",
+                                   "name": "Vinyyli Paratiisi",
+                                   ...
+                               },
+                               "price": 15,
+                           },
+                           ...
+                       ]
+                   }
+               },
+               {
+                   "_id": "662e97d2a30682e3974d1b5d",
+                   "genre": ... ,
+                   "title": "Back in Black",
+                   "artist": "AC/DC",
+                   "description": "The seventh studio album by AC/DC, known for its hard-hitting rock anthems and iconic guitar riffs.",
+                   "year": 1980,
+                   "stock": ...
+               }
            ],
-           "description": "German Luxury car known for its excellence and style.",
-           "year": 2020,
-           "price": 970000,
-           "_id": "660f9b42d408a4efb4044008",
-           "__v": 0
+           "totalPages": 3
        },
-       "message": "car created successfully",
+       "message": "Records retrieved successfully",
        "status": "success"
     }
-    ```
-    
-- **GET /:id**: Retrieve a single car by its ID.
-- **PUT /:id**: Update a car record by its ID. Requires an authorization token from an admin.
-- **DELETE /:id**: Delete a car record by its ID. Requires an authorization token from an admin.
+   ```
+</details>
+<details>
+  <summary><b>POST /: Create a new record. Requires an authorization token from an admin or a store.</b></summary>
+
+  ##### Request Body:
+  ```json
+  {
+      "title": "Back in Black",
+      "artist": "AC/DC",
+      "genre": "5e1a8b9c9b1d9ad471bc9c24",
+      "year": 1980,
+      "description": "The seventh studio album by AC/DC, known for its hard-hitting rock anthems and iconic guitar riffs.",
+      "condition": "65f80bd670ee734ea399ae13",
+      "price": 55,
+      "store": "65f9db69025a97b0d4b8e171"
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
+       "message": "Record created successfully",
+       "status": "success"
+   }
+  ```
+</details>
+<details>
+  <summary><b>GET /:recordId: Retrieve a single record by its ID</b></summary>
+
+  ##### Request Parameter:
+  ```
+  662ea63f5c29c0fa4fdb3f17
+  ```
+
+  ##### Response:
+   ```json
+  [
+    {
+        "_id": "662ea63f5c29c0fa4fdb3f17",
+        "genre": {
+            "_id": "66155311c88445b733cfdb7b",
+            "name": "Progressive Rock"
+        },
+        "title": "The Wall",
+        "artist": "Pink Floyd",
+        "description": "The eleventh studio album by Pink Floyd, a rock opera that explores themes of isolation, abandonment, and personal identity.",
+        "year": 1979,
+        "stock": {
+            "_id": "662ea63f5c29c0fa4fdb3f18",
+            "stockItems": [
+                {
+                    "_id": "662ea63f5c29c0fa4fdb3f29",
+                    "condition": {
+                        "_id": "65f80bd670ee734ea399ae09",
+                        "condition": "Very Good"
+                    },
+                    "store": {
+                        "_id": "65f9db69025a97b0d4b8e171",
+                        "name": "Vinyyli Paratiisi",
+                        ...
+                        "shippingInfo": {
+                            "_id": "65f9dbcc025a97b0d4b8e172",
+                            "domestic": {
+                                "standard": "Standard shipping: €5.00 (3-5 business days)",
+                                "express": "Express shipping: €10.00 (1-2 business days)"
+                            },
+                            "international": {
+                                "economy": "International Economy: €15.00 (7-14 business days)",
+                                "express": "International Express: €25.00 (3-5 business days)"
+                            }
+                        },
+                        "recordsInStock": [
+                            {
+                                "record": "65f9d2d1025a97b0d4b8e173",
+                                "stockItems": [
+                                    "66275cd5fbc2f496c6687053",
+                                    "662eba793cf8c38382a27e1b",
+                                    "662f21d2d5bbe13ff1a026d6"
+                                ]
+                            },
+                            ...
+                        ],
+                    },
+                    "price": 30,
+                }
+            ],
+        },
+    }
+  ]
+  ```
+</details>
+<details>
+  <summary><b>GET /genres: Retrieve all records genres.</b></summary>
+
+  ##### Response:
+   ```json
+   [
+       {
+           "_id": "661552e7c88445b733cfdb79",
+           "name": "Pop"
+       },
+       {
+           "_id": "6615530cc88445b733cfdb7a",
+           "name": "Rock"
+       },
+       {
+           "_id": "66155311c88445b733cfdb7b",
+           "name": "Progressive Rock"
+       }
+       ,
+       ...
+   ]
+   ```
+
+</details>
+<details>
+  <summary><b>GET /conditions: Retrieve all records conditions.</b></summary>
+
+  ##### Response:
+   ```json
+   {
+       "data": [
+           {
+               "_id": "65f80bd270ee734ea399ae08",
+               "condition": "New"
+           },
+           {
+               "_id": "65f80bce70ee734ea399ae07",
+               "condition": "Like New"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae09",
+               "condition": "Very Good"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae10",
+               "condition": "Good"
+           },
+           {
+               "_id": "65f80bd670ee734ea399ae13",
+               "condition": "Fair"
+           },
+           ... 
+       ],
+       "status": "success",
+       "message": "Conditions fetched with success"
+   }
+   ```
+
+</details>
 
 ### Users API Endpoints
 Base URL: `/api/v1/users`
 
-  - **GET /**: Retrieve all users. Requires an authorization token from an admin.
-    - Request Header:
-    ```
+<details>
+  <summary><b>GET /: Retrieve all users. Requires an authorization token from an admin.</b></summary>
+
+  ##### Request Header:
+  
+   ```
     Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY4MGFmYzcwZWU3MzRlYTM5OWFlMDQiLCJ1c2VyUm9sZSI6IkFkbWluIiwiaXNVc2VyQmFubmVkIjpmYWxzZSwiaWF0IjoxNzEyMjk4Mzc0LCJleHAiOjE3MTIzODQ3NzR9.bMKZF-ItcS_og2sTWoxQr7paTWQVRf8_YFfRbtBgJYo
-    ``` 
-     - Response:
-       ```json
+   ``` 
+
+  ##### Response:
+  ```json
        {
           "data": [
               {
-                  "_id": "65f80afc70ee734ea399ae04",
-                  "role": "Admin",
-                  "email": "jane.smith@example.com",
-                  "hashedPassword": "$2b$10$3PxzUyL9.vmwtWGzJZux6.UjLmV7HNc93Eb1WZt9FtspVI2kel16O",
-                  "userName": "janesmith",
-                  "firstName": "Jane",
-                  "lastName": "Smith",
+                  "_id": "6621163e2fd839c8f19db9bc",
+                  ...
+                  "userName": "danilodanilo",
+                  "firstName": "DANILO",
+                  "lastName": "COSTA CANGUCU",
+                  "role": "Customer",
                   "banned": false,
                   "orderHistory": [
-                      "65fd921ff855b31d09bda502"
+                      "6621163e2fd839c8f19db9ba",
+                      ...
+                      "6630d0826390a5a6de900f6b"
                   ],
-                  "__v": 1
-             },
-          ...
-          ]
+              },
+              {
+                  "_id": "662b847e64a5cdceab70ecb6",
+                  ...
+                  "userName": "paratiisi",
+                  "firstName": "Petri",
+                  "lastName": "Kaulonen",
+                  "role": "Store",
+                  "banned": false,
+                  "orderHistory": [
+                      "662b847e64a5cdceab70ecb4"
+                  ],
+                  "store": "65f9db69025a97b0d4b8e171"
+              },
+             ...
+          ],
+          "message": "users retrieved successfully",
+          "status": "success"
        }
-       ```
+  ```
 
-  - **GET /:userId**: Retrieve a single user by its ID.
+</details>
+<details>
+  <summary><b>METHOD /path: Description.</b></summary>
+
+  ##### Request Body:
+  ```json
+  {
+      
+  }
+  ```
+
+  ##### Response:
+   ```json
+   {
+       
+   }
+  ```
+</details>
+        
   - **PUT /:userId**: Update a user record by its ID. Requires an authorization token from either an admin or the user themselves.
   - **DELETE /:userId**: Delete a user record by its ID. Requires an authorization token from either an admin or the user themselves.
   - **GET /:userId/recover-password**: Request password recovery for the user. Requires authorization from the user themselves.
