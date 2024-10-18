@@ -23,7 +23,7 @@ app.use(`${baseUrl}/payments`, paymentsRouter);
 app.use(`${baseUrl}/stores`, storesRouter);
 
 // TODO improve health check
-app.get("/health", (_: express.Request, res: express.Response) => {
+app.get(`${baseUrl}/health`, (_: express.Request, res: express.Response) => {
   res.send("OK");
 });
 
